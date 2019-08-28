@@ -1,0 +1,2654 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# <img style=\"float: left; padding-right: 10px; width: 45px\" src=\"https://raw.githubusercontent.com/Harvard-IACS/2018-CS109A/master/content/styles/iacs.png\"> CS109A Introduction to Data Science \n",
+    "\n",
+    "## Homework 1: Data Collection - Web Scraping - Data Parsing\n",
+    "\n",
+    "**Harvard University**<br/>\n",
+    "**Fall 2018**<br/>\n",
+    "**Instructors**: Pavlos Protopapas and Kevin Rader\n",
+    "\n",
+    "\n",
+    "\n",
+    "<hr style='height:2px'>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style>\n",
+       "h1 { \n",
+       "    padding-top: 25px;\n",
+       "    padding-bottom: 25px;\n",
+       "    text-align: left; \n",
+       "    padding-left: 10px;\n",
+       "    background-color: #DDDDDD; \n",
+       "    color: black;\n",
+       "}\n",
+       "h2 { \n",
+       "    padding-top: 10px;\n",
+       "    padding-bottom: 10px;\n",
+       "    text-align: left; \n",
+       "    padding-left: 5px;\n",
+       "    background-color: #EEEEEE; \n",
+       "    color: black;\n",
+       "}\n",
+       "\n",
+       "div.exercise {\n",
+       "\tbackground-color: #ffcccc;\n",
+       "\tborder-color: #E9967A; \t\n",
+       "\tborder-left: 5px solid #800080; \n",
+       "\tpadding: 0.5em;\n",
+       "}\n",
+       "div.theme {\n",
+       "\tbackground-color: #DDDDDD;\n",
+       "\tborder-color: #E9967A; \t\n",
+       "\tborder-left: 5px solid #800080; \n",
+       "\tpadding: 0.5em;\n",
+       "\tfont-size: 18pt;\n",
+       "}\n",
+       "p.q1 { \n",
+       "    padding-top: 5px;\n",
+       "    padding-bottom: 5px;\n",
+       "    text-align: left; \n",
+       "    padding-left: 5px;\n",
+       "    background-color: #EEEEEE; \n",
+       "    color: black;\n",
+       "}\n",
+       "header {\n",
+       "   padding-top: 35px;\n",
+       "    padding-bottom: 35px;\n",
+       "    text-align: left; \n",
+       "    padding-left: 10px;\n",
+       "    background-color: #DDDDDD; \n",
+       "    color: black;\n",
+       "}\n",
+       "</style>\n",
+       "\n"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "## RUN THIS CELL TO GET THE RIGHT FORMATTING \n",
+    "import requests\n",
+    "from IPython.core.display import HTML\n",
+    "styles = requests.get(\"https://raw.githubusercontent.com/Harvard-IACS/2018-CS109A/master/content/styles/cs109.css\").text\n",
+    "HTML(styles)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Instructions\n",
+    "- To submit your assignment follow the instructions given in Canvas.\n",
+    "- The deliverables in Canvas are: <br/>\n",
+    "    a) This python notebook with your code and answers, plus a pdf version of it (see Canvas for details),<br/>\n",
+    "    b) the bibtex file you created, <br/>\n",
+    "    c) The CSV file you created, <br/>\n",
+    "    d) The JSON file you created. <br/>\n",
+    "    \n",
+    "- Exercise **responsible scraping**. Web servers can become slow or unresponsive if they receive too many requests from the same source in a short amount of time. Use a delay of 10 seconds between requests in your code. This helps not to get blocked by the target website. Run the webpage fetching part of the homework only once and do not re-run after you have saved the results in the JSON file (details below). \n",
+    "- Web scraping requests can take several minutes. This is another reason why you should not wait until the last minute to do this homework.\n",
+    "- For this assignment, we will use Python 3.5 for grading.\n",
+    "\n",
+    "\n",
+    "# Data Collection - Web Scraping - Data Parsing \n",
+    " \n",
+    "\n",
+    "In this homework, your goal is to learn how to acquire, parse, clean, and analyze data. Initially you will read the data from a file, and then later scrape them directly from a website. You will look for specific pieces of information by parsing the data, clean the data to prepare them for analysis, and finally, answer some questions.\n",
+    "\n",
+    "In doing so you will get more familiar with three of the common file formats for storing and transferring data, which are:\n",
+    "- CSV, a text-based file format used for storing tabular data that are separated by some delimiter, usually comma or space.\n",
+    "- HTML/XML, the stuff the web is made of.\n",
+    "- JavaScript Object Notation (JSON), a text-based open standard designed for transmitting structured data over the web."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# import the necessary libraries\n",
+    "%matplotlib inline\n",
+    "import numpy as np\n",
+    "import scipy as sp\n",
+    "import matplotlib as mpl\n",
+    "import matplotlib.cm as cm\n",
+    "import matplotlib.pyplot as plt\n",
+    "import pandas as pd\n",
+    "import time\n",
+    "pd.set_option('display.width', 500)\n",
+    "pd.set_option('display.max_columns', 100)\n",
+    "pd.set_option('display.notebook_repr_html', True)\n",
+    "import seaborn as sns"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Help a professor parse their publications and extract information.\n",
+    "\n",
+    "### Overview\n",
+    "\n",
+    "In this part your goal is to parse the HTML page of a professor containing some of his/her publications, and answer some questions. This page is provided to you in the file `data/publist_super_clean.html`. There are 45 publications in descending order from No. 244 to No. 200.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# use this file provided\n",
+    "PUB_FILENAME = 'data/publist_super_clean.html'"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<div class='exercise'><b> Question 1 [40 pts]: Parsing and Converting to bibTex and CSV using Beautiful Soup and python string manipulation </b></div>\n",
+    "\n",
+    "A lot of the bibliographic and publication information is displayed in various websites in a not-so-structured HTML files. Some publishers prefer to store and transmit this information in a .bibTex file which looks roughly like this (we've simplified a few things):\n",
+    "```\n",
+    "@article { \n",
+    "     author = \"John Doyle\"\n",
+    "     title = \"Interaction between atoms\"\n",
+    "     URL = \"Papers/PhysRevB_81_085406_2010.pdf\"\n",
+    "     journal = \"Phys. Rev. B\"\n",
+    "     volume = \"81\"\n",
+    "}\n",
+    "```\n",
+    "You will notice that this file format is a set of items, each of which is a set of key-value pairs. In the python world, you can think of this as a list of dictionaries.\n",
+    "If you think about spreadsheets (as represented by CSV files), they have the same structure. Each line is an item, and has multiple features, or keys, as represented by that line's value for the column corresponding to the key.\n",
+    "\n",
+    "You are given an .html file containing a list of papers scraped from the author's website and you are to write the information into .bibTex and .CSV formats. A useful tool for parsing websites is BeautifulSoup  (http://www.crummy.com/software/BeautifulSoup/) (BS).  In this problem, will parse the  file using BS, which makes parsing HTML a lot easier.\n",
+    "\n",
+    "**1.1** Write a function called `make_soup` that accepts a filename for an HTML file and returns a BS object.\n",
+    "    \n",
+    "**1.2** Write a function that reads in the BS object, parses it, converts it into a list of dictionaries: one dictionary per paper. Each of these dictionaries should have the following format (with different values for each publication):\n",
+    "```\n",
+    "{'author': 'L.A. Agapito, N. Kioussis and E. Kaxiras',\n",
+    " 'title': '\"Electric-field control of magnetism in graphene quantum dots:\\n Ab initio calculations\"',\n",
+    " 'URL': 'Papers/PhysRevB_82_201411_2010.pdf',\n",
+    " 'journal': 'Phys. Rev. B',\n",
+    " 'volume': '82'}\n",
+    "```\n",
+    "\n",
+    "\n",
+    "**1.3** Convert the list of dictionaries into standard .bibTex format using python string manipulation, and write the results into a file called `publist.bib`.\n",
+    "\n",
+    "**1.4** Convert the list of dictionaries into standard tabular .csv format using pandas, and write the results into a file called `publist.csv`. The csv file should have a header and no integer index.\n",
+    "\n",
+    "    \n",
+    "#### HINT \n",
+    "- Inspect the HTML code for tags that indicate information chunks such as `title` of the paper.  The `find_all` method of BeautifulSoup might be useful.\n",
+    "- Question 1.2 is better handled if you break the code into functions, each performing a small task such as finding the author(s) for each paper. \n",
+    "- Question 1.3 is effectively tackled by first using python string formatting on a template string.\n",
+    "- Make sure you catch exceptions when needed. \n",
+    "- Make sure you check for **missing data** and handle these cases as you see fit. \n",
+    "\n",
+    "\n",
+    "#### Resources\n",
+    "- [BeautifulSoup Tutorial](https://www.dataquest.io/blog/web-scraping-tutorial-python/).\n",
+    "- More about the [BibTex format](http://www.bibtex.org).<BR>\n",
+    "    \n",
+    "### Answers "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 235,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# import the necessary libraries \n",
+    "from bs4 import BeautifulSoup\n",
+    "import re"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<span class='sq'>**1.1 Write a function called `make_soup`  ...**</span>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def make_soup(filename):\n",
+    "    '''Open the file and convert into a BS object. \n",
+    "       \n",
+    "       Args:\n",
+    "           filename: A string name of the file.\n",
+    "       \n",
+    "       Returns:\n",
+    "           A BS object containing the HTML page ready to be parsed.\n",
+    "    '''\n",
+    "    with open(filename) as f:\n",
+    "        dat = f.read()\n",
+    "        soup = BeautifulSoup(dat, 'html.parser')\n",
+    "        return(soup)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 734,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# check your code - print the BS object, you should get a familiar HTML page as text\n",
+    "# clear/remove output before making pdf\n",
+    "filename = 'data/publist_super_clean.html'\n",
+    "soup = make_soup(filename)\n",
+    "# print(soup.prettify())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Your output should look **like** this:\n",
+    "```\n",
+    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n",
+    "   \"http://www.w3.org/TR/html4/loose.dtd\">\n",
+    "\n",
+    "<title>Kaxiras E journal publications</title>\n",
+    "<head>\n",
+    "<meta content=\"text/html;charset=utf-8\" http-equiv=\"Content-Type\"/>\n",
+    "<link href=\"../styles/style_pubs.css\" rel=\"stylesheet\" type=\"text/css\"/>\n",
+    "<meta content=\"\" name=\"description\"/>\n",
+    "<meta content=\"Kaxiras E, Multiscale Methods, Computational Materials\" name=\"keywords\"/>\n",
+    "</head>\n",
+    "<body>\n",
+    "<ol start=\"244\">\n",
+    "<li>\n",
+    "<a href=\"Papers/2011/PhysRevB_84_125411_2011.pdf\" target=\"paper244\">\n",
+    "\"Approaching the intrinsic band gap in suspended high-mobility graphene nanoribbons\"</a>\n",
+    "<br/>Ming-Wei Lin, Cheng Ling, Luis A. Agapito, Nicholas Kioussis, Yiyang Zhang, Mark Ming-Cheng Cheng,\n",
+    "<i>PHYSICAL REVIEW B </i> <b>84</b>,  125411 (2011)\n",
+    "<br/>\n",
+    "</li>\n",
+    "</ol>\n",
+    "<ol start=\"243\">\n",
+    "<li>\n",
+    "<a href=\"Papers/2011/PhysRevB_84_035325_2011.pdf\" target=\"paper243\">\n",
+    "\"Effect of symmetry breaking on the optical absorption of semiconductor nanoparticles\"</a>\n",
+    "<br/>JAdam Gali, Efthimios Kaxiras, Gergely T. Zimanyi, Sheng Meng,\n",
+    "<i>PHYSICAL REVIEW B </i> <b>84</b>,  035325 (2011)\n",
+    "<br/>\n",
+    "</li>\n",
+    "</ol>\n",
+    "\n",
+    "...\n",
+    "\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**1.2 Write a function that reads in the BS object, parses it, converts it into a list of dictionaries...**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 830,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# clear output before making pdf\n",
+    "# your code here \n",
+    "def BStoDict(soup):\n",
+    "    '''Reads in a BeautifulSoup object, parses it, \n",
+    "        and converts it into a list of dictionaries\n",
+    "       \n",
+    "       Args:\n",
+    "           A BeautifulSoup object\n",
+    "       \n",
+    "       Returns:\n",
+    "           A list of dictionaries\n",
+    "    '''\n",
+    "    ###############\n",
+    "    # for me:\n",
+    "    # b = a.text\n",
+    "    # regular expression for finding title\n",
+    "    # (re.search('\\\"(.*)\\\"',b).groups()[0])\n",
+    "    ###############\n",
+    "    \n",
+    "    listD = []\n",
+    "    \n",
+    "    # troubleshoot\n",
+    "    # i = 0\n",
+    "    \n",
+    "    # each paper is contained within a 'ol' tag, making it a great tag to loop over \n",
+    "    for paper in soup.find_all('ol'):\n",
+    "        # troubleshoot\n",
+    "        # print(i)\n",
+    "        \n",
+    "        # create empty dictionary\n",
+    "        d = {}\n",
+    "        \n",
+    "        # locate the ones that were done more easily with BF\n",
+    "        \n",
+    "        # grab the title\n",
+    "        # the title is in the first 'a' tag\n",
+    "        # grab the text from it and perform some processing on it\n",
+    "        # conditionals check to see that we find something bacause if find does not\n",
+    "        # return anything, we will get an AttributeError when trying to process it\n",
+    "        if paper.find('a'):\n",
+    "            d['title'] = ' '.join(paper.find('a').text.strip().strip('\"').split('\\n'))\n",
+    "        else:\n",
+    "            d['title'] = ''\n",
+    "        \n",
+    "        # grab the URL\n",
+    "        # the URL is in href, so grab it from there\n",
+    "        if paper.find('a', href = True):\n",
+    "            d['URL'] = paper.find('a')['href']\n",
+    "        else:\n",
+    "            d['URL'] = ''\n",
+    "        \n",
+    "        # grab the journal\n",
+    "        # the journal is in the 'i' tag\n",
+    "        # grab the text and process it\n",
+    "        if paper.find('i'):\n",
+    "            d['journal'] = paper.find('i').text.strip()\n",
+    "        else:\n",
+    "            d['journal'] = ''\n",
+    "\n",
+    "        # use regular expressions to extract these\n",
+    "        s = str(paper)\n",
+    "        \n",
+    "        # for the author\n",
+    "        # regular expression matches to find author\n",
+    "        if re.search('<br/>\\s*(.*),\\s*<i>',s):\n",
+    "            d['author'] = re.search('<br/>\\s*(.*),\\s*<i>',s).groups()[0]\n",
+    "        else:\n",
+    "            d['author'] = ''\n",
+    "        \n",
+    "        # for the volume  \n",
+    "        # regular expression matches to find volume\n",
+    "        if re.search('<b>(\\d+)</b>',s):\n",
+    "            d['volume'] = re.search('<b>(\\d+)</b>',s).groups()[0]\n",
+    "        else:\n",
+    "            d['volume'] = ''\n",
+    "        listD.append(d)\n",
+    "        \n",
+    "#         volume could also be done using\n",
+    "#         if paper.find('b'):\n",
+    "#         d['volume'] = paper.find('b').text\n",
+    "#         else:\n",
+    "#         d['volume'] = ''\n",
+    "        \n",
+    "        # troubleshoot\n",
+    "        # i += 1\n",
+    "        \n",
+    "    return(listD)\n",
+    "        \n",
+    "        \n",
+    "        "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 818,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "papers = BStoDict(soup)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**1.3 Convert the list of dictionaries into the .bibTex format using python string manipulation (python string formatting on a template string is particularly useful)..**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 823,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# print(papers)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 824,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# write to .bib format\n",
+    "# we see that a .bib format is separted into compartments\n",
+    "# each compartment starts with the @ character and the article type\n",
+    "# we have all articles so use article\n",
+    "# the article type is follows by a curly brace, and so on....\n",
+    "# use string formatting to write each paper to the file\n",
+    "with open('publist.bib', 'w') as f:\n",
+    "    for dic in papers:\n",
+    "        f.write('@article{\\n\\t')\n",
+    "        f.write('author = \"{}\",\\n\\t'.format(dic['author']))\n",
+    "        f.write('title = \"{}\",\\n\\t'.format(dic['title']))\n",
+    "        f.write('URL = \"{}\",\\n\\t'.format(dic['URL']))\n",
+    "        f.write('journal = \"{}\",\\n\\t'.format(dic['journal']))\n",
+    "        f.write('volume = {}}}\\n\\n'.format(dic['volume']))\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 829,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# check your answer - print the bibTex file\n",
+    "# clear/remove output before making pdf\n",
+    "# with open('test.bib') as f:\n",
+    "#    print(f.read())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Your output should look like this\n",
+    "```\n",
+    "@article{    \n",
+    "     author = \"Ming-Wei Lin, Cheng Ling, Luis A. Agapito, Nicholas Kioussis, Yiyang Zhang, Mark Ming-Cheng Cheng\",\n",
+    "     title = \"Approaching the intrinsic band gap in suspended high-mobility graphene nanoribbons\",\n",
+    "     URL = \"Papers/2011/PhysRevB_84_125411_2011.pdf\",\n",
+    "     journal = \"PHYSICAL REVIEW B\",\n",
+    "     volume = 84\n",
+    "}\n",
+    "\n",
+    "...\n",
+    "\n",
+    "@article{    \n",
+    "     author = \"E. Kaxiras and S. Succi\",\n",
+    "     title = \"Multiscale simulations of complex systems: computation meets reality\",\n",
+    "     URL = \"Papers/SciModSim_15_59_2008.pdf\",\n",
+    "     journal = \"Sci. Model. Simul.\",\n",
+    "     volume = 15\n",
+    "}\n",
+    "\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "** 1.4 Convert the list of dictionaries into the .csv format using pandas, and write the data into `publist.csv`. The csv file should have a header and no integer index...**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 737,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# simple pandas command\n",
+    "publist_df = pd.DataFrame.from_records(papers)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 738,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style>\n",
+       "    .dataframe thead tr:only-child th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: left;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>URL</th>\n",
+       "      <th>author</th>\n",
+       "      <th>journal</th>\n",
+       "      <th>title</th>\n",
+       "      <th>volume</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Papers/2011/PhysRevB_84_125411_2011.pdf</td>\n",
+       "      <td>Ming-Wei Lin, Cheng Ling, Luis A. Agapito, Nic...</td>\n",
+       "      <td>PHYSICAL REVIEW B</td>\n",
+       "      <td>Approaching the intrinsic band gap in suspende...</td>\n",
+       "      <td>84</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Papers/2011/PhysRevB_84_035325_2011.pdf</td>\n",
+       "      <td>JAdam Gali, Efthimios Kaxiras, Gergely T. Zima...</td>\n",
+       "      <td>PHYSICAL REVIEW B</td>\n",
+       "      <td>Effect of symmetry breaking on the optical abs...</td>\n",
+       "      <td>84</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Papers/2011/PhysRevB_83_054204_2011.pdf</td>\n",
+       "      <td>Jan M. Knaup, Han Li, Joost J. Vlassak, and Ef...</td>\n",
+       "      <td>PHYSICAL REVIEW B</td>\n",
+       "      <td>Influence of CH2 content and network defects o...</td>\n",
+       "      <td>83</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Papers/2011/PhysRevB_83_045303_2011.pdf</td>\n",
+       "      <td>Martin Heiss, Sonia Conesa-Boj, Jun Ren, Hsian...</td>\n",
+       "      <td>PHYSICAL REVIEW B</td>\n",
+       "      <td>Direct correlation of crystal structure and op...</td>\n",
+       "      <td>83</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Papers/2011/PhilTransRSocA_369_2354_2011.pdf</td>\n",
+       "      <td>Simone Melchionna, Efthimios Kaxiras, Massimo ...</td>\n",
+       "      <td>Phil. Trans. R. Soc. A</td>\n",
+       "      <td>Endothelial shear stress from large-scale bloo...</td>\n",
+       "      <td>369</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                            URL                                             author                  journal                                              title volume\n",
+       "0       Papers/2011/PhysRevB_84_125411_2011.pdf  Ming-Wei Lin, Cheng Ling, Luis A. Agapito, Nic...       PHYSICAL REVIEW B   Approaching the intrinsic band gap in suspende...     84\n",
+       "1       Papers/2011/PhysRevB_84_035325_2011.pdf  JAdam Gali, Efthimios Kaxiras, Gergely T. Zima...       PHYSICAL REVIEW B   Effect of symmetry breaking on the optical abs...     84\n",
+       "2       Papers/2011/PhysRevB_83_054204_2011.pdf  Jan M. Knaup, Han Li, Joost J. Vlassak, and Ef...       PHYSICAL REVIEW B   Influence of CH2 content and network defects o...     83\n",
+       "3       Papers/2011/PhysRevB_83_045303_2011.pdf  Martin Heiss, Sonia Conesa-Boj, Jun Ren, Hsian...       PHYSICAL REVIEW B   Direct correlation of crystal structure and op...     83\n",
+       "4  Papers/2011/PhilTransRSocA_369_2354_2011.pdf  Simone Melchionna, Efthimios Kaxiras, Massimo ...  Phil. Trans. R. Soc. A   Endothelial shear stress from large-scale bloo...    369"
+      ]
+     },
+     "execution_count": 738,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "publist_df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 740,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# simple pandas command\n",
+    "publist_df.to_csv(\"publist.csv\", index=False, header=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<hr style='height:2px'>\n",
+    "## Follow the stars in IMDb's list of \"The Top 100 Stars for 2017\" \n",
+    "\n",
+    "### Overview\n",
+    "In this part, your goal is to extract information from IMDb's Top 100 Stars for 2017 (https://www.imdb.com/list/ls025814950/) and perform some analysis on each star in the list. In particular we are interested to know: a) how many performers made their first movie at 17? b) how many performers started as child actors? c) who is the most proliferate actress or actor in IMDb's list of the Top 100 Stars for 2017? . These questions are addressed in more details in the Questions below. \n",
+    "\n",
+    "When data is not given to us in a file, we need to fetch them using one of the following ways:\n",
+    "- download a file from a source URL\n",
+    "- query a database \n",
+    "- query a web API \n",
+    "- scrape data from the web page"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<div class='exercise'><b> Question 2 [52 pts]: Web Scraping using Beautiful Soup and exploring using Pandas </b></div>\n",
+    "\n",
+    "**2.1** Download the webpage of the \"Top 100 Stars for 2017\" (https://www.imdb.com/list/ls025814950/) into a `requests` object and name it `my_page`. Explain what the following attributes are:\n",
+    "\n",
+    "- `my_page.text`, \n",
+    "- `my_page.status_code`,\n",
+    "- `my_page.content`.\n",
+    "\n",
+    "**2.2** Create a Beautiful Soup object named `star_soup` using `my_page` as input.\n",
+    "\n",
+    "**2.3** Write a function called `parse_stars` that accepts `star_soup` as its input and generates a list of dictionaries named `starlist` (see definition below; order of dictionaries does not matter). One of the fields of this dictionary is the `url` of each star's individual page, which you need to scrape and save the contents in the `page` field. Note that there is a ton of information about each star on these webpages.\n",
+    "\n",
+    "```\n",
+    "name: the name of the actor/actress as it appears at the top\n",
+    "gender: 0 or 1: translate the word 'actress' into 1 and 'actor' into '0'\n",
+    "url: the url of the link under their name that leads to a page with details\n",
+    "page: BS object with html text acquired by scraping the above 'url' page' \n",
+    "```\n",
+    "\n",
+    "**2.4** Write a function called `create_star_table` which takes `starlist` as an input and extracts information about each star (see function definition for the exact information to be extracted and the exact output definition).  Only extract information from the first box on each star's page. If the first box is acting, consider only acting credits and the star's acting debut, if the first box is Directing, consider only directing credits and directorial debut.\n",
+    "\n",
+    "**2.5** Now that you have scraped all the info you need, it's good practice to save the last data structure you created to disk. Save the data structure to a JSON file named `starinfo.json` and submit this JSON file in Canvas. If you do this, if you have to restart, you won't need to redo all the requests and parsings from before.  \n",
+    "\n",
+    "**2.6** We provide a JSON file called `data/staff_starinfo.json` created by CS109 teaching staff for consistency, which you should use for the rest of the homework. Import the contents of this JSON file  into a pandas dataframe called `frame`. Check the types of variables in each column and clean these variables if needed. Add a new column to your dataframe with the age of each actor when they made their first appearance, movie or TV, (name this column `age_at_first_movie`). Check some of the values of this new column. Do you find any problems? You don't need to fix them.\n",
+    "\n",
+    "**2.7** You are now ready to answer the following intriguing questions: \n",
+    "- **2.7.1** How many performers made their first appearance (movie or TV) when he/she was 17 years old?\n",
+    "\n",
+    "- **2.7.2** How many performers started as child actors? Define child actor as a person younger than 12 years old. \n",
+    "\n",
+    "**2.8** Make a plot of the number of credits against the name of actor/actress. Who is the most prolific actress or actor in IMDb's list of the Top 100 Stars for 2017? Define **most prolific** as the performer with the most credits.\n",
+    "    \n",
+    "### Hints\n",
+    "- Create a variable that groups actors/actresses by the age of their first movie. Use pandas' `.groupby` to divide the dataframe into groups of performers that for example started performing as children (age $<$ 12). The grouped variable is a `GroupBy` pandas object and this object has all of the information needed to then apply operations to each of the groups.\n",
+    "- When cleaning the data make sure the variables with which you are performing calculations are in numerical format.\n",
+    "- The column with the year has some values that are double, e.g. **'2000-2001'** and the column with age has some empty cells. You need to deal with these in a reasonable fashion before performing calculations on the data. \n",
+    "- You should include both movies and TV shows.\n",
+    "    \n",
+    "### Resources\n",
+    "- The `requests` library makes working with HTTP requests powerful and easy. For more on the `requests` library see http://docs.python-requests.org/\n",
+    "\n",
+    "### Answers"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 249,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "import requests"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**2.1 Download the webpage of the \"Top 100 Stars for 2017 ...**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 252,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "my_page = requests.get(\"https://www.imdb.com/list/ls025814950/\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 356,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "int"
+      ]
+     },
+     "execution_count": 356,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "type(my_page.status_code)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 268,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# print(BeautifulSoup(my_page.text, 'html.parser').prettify())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "** Answer **\n",
+    "\n",
+    "`my_page.text` contains the decoded content of the webpage passed to `requests.get()`; this includes the `HTML` and `JavsScript` of the page. \n",
+    "\n",
+    "`my_page.status_code` contains the `HTTP` status of the `get` request; in this example, the status code was `200`, meaning that the request sent to the server was successful with no errors. \n",
+    "\n",
+    "`my_page.content` contains the text information as bytes; `type(my_page.content` returns bytes."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**2.2 Create a Beautiful Soup object named star_soup giving my_page as input.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 270,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "star_soup = BeautifulSoup(my_page.text, 'html.parser')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 730,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# check your code - you should see a familiar HTML page\n",
+    "# clear/remove output before making pdf\n",
+    "# print (star_soup.prettify()[:])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**2.3 Write a function called `parse_stars` that accepts `star_soup` as its input ...**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```\n",
+    "Function\n",
+    "--------\n",
+    "parse_stars\n",
+    "\n",
+    "Input\n",
+    "------\n",
+    "star_soup: the soup object with the scraped page\n",
+    "   \n",
+    "Returns\n",
+    "-------\n",
+    "a list of dictionaries; each dictionary corresponds to a star profile and has the following data:\n",
+    "\n",
+    "    name: the name of the actor/actress as it appears at the top\n",
+    "    gender: 0 or 1: translate the word 'actress' into 1 and 'actor' into '0'\n",
+    "    url: the url of the link under their name that leads to a page with details\n",
+    "    page: BS object with 'html text acquired by scraping the above 'url' page' \n",
+    "\n",
+    "Example:\n",
+    "--------\n",
+    "{'name': Tom Hardy,\n",
+    "  'gender': 0,\n",
+    "  'url': https://www.imdb.com/name/nm0362766/?ref_=nmls_hd,\n",
+    "  'page': BS object with 'html text acquired by scraping the 'url' page'\n",
+    "}\n",
+    "\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 382,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def pars_star(soup):\n",
+    "    '''Reads in a BeautifulSoup object, parses it, \n",
+    "        and converts it into a list of dictionaries\n",
+    "       \n",
+    "       Args:\n",
+    "           A BeautifulSoup object\n",
+    "       \n",
+    "       Returns:\n",
+    "           A list of dictionaries\n",
+    "    '''\n",
+    "    # create an empty list of dictionaries\n",
+    "    listD = []\n",
+    "    \n",
+    "    # troubleshoot\n",
+    "    # i = 0\n",
+    "    \n",
+    "    # we see on the page that each entry is contained within a div\n",
+    "    # each div class we want has a specific class \n",
+    "    # this makes for a great compartment to loop over\n",
+    "    for star in soup.find_all('div', class_ = 'lister-item mode-detail'):\n",
+    "        # troubleshoot\n",
+    "        # print(i)\n",
+    "        \n",
+    "        # create empty dictionary\n",
+    "        d = {}\n",
+    "                \n",
+    "        # grab the name\n",
+    "        # name is contained with the 'a' tag and the href command\n",
+    "        # write a regex to uniquly match the appropriate 'a' tag\n",
+    "        # do some processing\n",
+    "        # write a conditional to avoid errors like AttributeError\n",
+    "        if star.find('a', href = re.compile('/name/nm\\d+\\?ref_=nmls_hd')):\n",
+    "            d['name'] = star.find('a', href = re.compile('/name/nm\\d+\\?ref_=nmls_hd')).text.strip()\n",
+    "        else:\n",
+    "            d['name'] = ''\n",
+    "        \n",
+    "        # grab the actor/ actress\n",
+    "        # actress (or actor) is contained within the 'p' tag\n",
+    "        # the p tag we want is contained within a unique class\n",
+    "        # write a regex to extract actress\n",
+    "        # do some processing\n",
+    "        # write a conditional to avoid errors like AttributeError\n",
+    "        if star.find('p', class_ = re.compile('text-muted text-small')):\n",
+    "            if re.search('[Aa]ctress', star.find('p', class_ = re.compile('text-muted text-small')).text.strip()):\n",
+    "                d['gender'] = 1\n",
+    "            else:\n",
+    "                d['gender'] = 0\n",
+    "        else:\n",
+    "            d['gender'] = ''\n",
+    "            \n",
+    "        # grab the URL\n",
+    "        if star.find('a', href = re.compile('/name/nm\\d+\\?ref_=nmls_hd')):\n",
+    "            d['URL'] = star.find('a', href = re.compile('/name/nm\\d+\\?ref_=nmls_hd'))['href']\n",
+    "        else:\n",
+    "            d['URL'] = ''\n",
+    "        \n",
+    "        # grab the page\n",
+    "        time.sleep(10)\n",
+    "        Webpage = \"https://www.imdb.com\" + d['URL']\n",
+    "        the_req = requests.get(Webpage)\n",
+    "        if the_req.status_code == 200:\n",
+    "            d['page'] = BeautifulSoup(the_req.text, 'html.parser')\n",
+    "        else:\n",
+    "            d['page'] = ''\n",
+    "\n",
+    "        listD.append(d)\n",
+    "        \n",
+    "        # troubleshoot\n",
+    "        # i += 1\n",
+    "        \n",
+    "    return(listD)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 370,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "starlist = pars_star(star_soup)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 371,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "100"
+      ]
+     },
+     "execution_count": 371,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "len(starlist)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This should give you 100"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 731,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# check your code\n",
+    "# this list is large because of the html code into the `page` field\n",
+    "# to get a better picture, print only the first element\n",
+    "# clear/remove output before making pdf\n",
+    "# starlist[1]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Your output should look like this:\n",
+    "```\n",
+    "{'name': 'Gal Gadot',\n",
+    " 'gender': 1,\n",
+    " 'url': 'https://www.imdb.com/name/nm2933757?ref_=nmls_hd',\n",
+    " 'page': \n",
+    " <!DOCTYPE html>\n",
+    " \n",
+    " <html xmlns:fb=\"http://www.facebook.com/2008/fbml\" xmlns:og=\"http://ogp.me/ns#\">\n",
+    " <head>\n",
+    " <meta charset=\"utf-8\"/>\n",
+    " <meta content=\"IE=edge\" http-equiv=\"X-UA-Compatible\"/>\n",
+    " <meta content=\"app-id=342792525, app-argument=imdb:///name/nm2933757?src=mdot\" name=\"apple-itunes-app\"/>\n",
+    " <script type=\"text/javascript\">var IMDbTimer={starttime: new Date().getTime(),pt:'java'};</script>\n",
+    " <script>\n",
+    "     if (typeof uet == 'function') {\n",
+    "       uet(\"bb\", \"LoadTitle\", {wb: 1});\n",
+    "     }\n",
+    " </script>\n",
+    " <script>(function(t){ (t.events = t.events || {})[\"csm_head_pre_title\"] = new Date().getTime(); })(IMDbTimer);</script>\n",
+    " \n",
+    "... \n",
+    "\n",
+    "\n",
+    " ```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**2.4 Write a function called `create_star_table` to extract information about each star ...**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```\n",
+    "Function\n",
+    "--------\n",
+    "create_star_table\n",
+    "\n",
+    "Input\n",
+    "------\n",
+    "the starlist\n",
+    "   \n",
+    "Returns\n",
+    "-------\n",
+    "\n",
+    "a list of dictionaries; each dictionary corresponds to a star profile and has the following data:\n",
+    "\n",
+    "    star_name: the name of the actor/actress as it appears at the top\n",
+    "    gender: 0 or 1 (1 for 'actress' and 0 for 'actor')  \n",
+    "    year_born : year they were born\n",
+    "    first_movie: title of their first movie or TV show\n",
+    "    year_first_movie: the year they made their first movie or TV show\n",
+    "    credits: number of movies or TV shows they have made in their career.\n",
+    "    \n",
+    "--------\n",
+    "Example:\n",
+    "\n",
+    "{'star_name': Tom Hardy,\n",
+    "  'gender': 0,\n",
+    "  'year_born': 1997,\n",
+    "  'first_movie' : 'Batman',\n",
+    "  'year_first_movie' : 2017,\n",
+    "  'credits' : 24}\n",
+    "  \n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 831,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def create_star_table(starlist):\n",
+    "    \n",
+    "    '''\n",
+    "    Reads in a list of dictionaries containing\n",
+    "    information on a numver of stars, and outputs\n",
+    "    a list of dictionaries containing more detailed\n",
+    "    information of the stars. \n",
+    "    \n",
+    "    Arg:\n",
+    "        a list of dictionaries\n",
+    "    \n",
+    "    Returns:\n",
+    "        a list of dictionaries\n",
+    "    '''\n",
+    "    \n",
+    "    # write a helper function to extract data from the URL page\n",
+    "    # this includes the year born, credits, first movie, and year of first movie\n",
+    "    # the other datat we need come directly from the input\n",
+    "    def helper_fun(soup):\n",
+    "        '''\n",
+    "        Reads in a BeautifulSoup object, parses it\n",
+    "        for some information and returns a dictionary\n",
+    "\n",
+    "        Args:\n",
+    "            a BeautifulSoup object\n",
+    "\n",
+    "        Returns:\n",
+    "            a dictionary\n",
+    "        '''\n",
+    "        \n",
+    "        dd = {}\n",
+    "        \n",
+    "        # find the year born\n",
+    "        if soup.find('a', href = re.compile('/search/name\\?birth_year=\\d{4}&ref_=nm_ov_bth_year')):\n",
+    "            dd['year_born'] = int(soup.find('a', href = re.compile('/search/name\\?birth_year=\\d{4}&ref_=nm_ov_bth_year')).text)\n",
+    "        else:\n",
+    "            dd['year_born'] = ''\n",
+    "            \n",
+    "        # find the credits\n",
+    "        if soup.find('div', id = re.compile('filmo-head-(actress|actor)')):\n",
+    "            s = str(soup.find('div', id = re.compile('filmo-head-(actress|actor)')))\n",
+    "            if re.search('\\((\\d+) credits\\)',s):\n",
+    "                dd['credits'] = re.search('\\((\\d+) credits\\)',s).groups()[0]\n",
+    "            else:\n",
+    "                dd['credits'] = ''\n",
+    "        else:\n",
+    "            dd['credits'] = ''\n",
+    "\n",
+    "        # find the first movie\n",
+    "        try: \n",
+    "            dd['first_movie'] = soup.find('div', class_ = 'filmo-category-section').find_all('div', class_ = re.compile('filmo-row (odd|even)'))[-1].find('b').text\n",
+    "        except AttributeError:\n",
+    "            dd['first_movie'] = ''\n",
+    "            \n",
+    "        # find the year of the first movie\n",
+    "        try:\n",
+    "            dd['year_first_movie'] = soup.find('div', class_ = 'filmo-category-section').find_all('div', class_ = re.compile('filmo-row (odd|even)'))[-1].find('span', class_ = 'year_column').text.strip()\n",
+    "        except AttributeError:\n",
+    "            dd['year_first_movie'] = ''\n",
+    "        \n",
+    "        return(dd)\n",
+    "    \n",
+    "    \n",
+    "    listD = []\n",
+    "    \n",
+    "    # troubleshoot\n",
+    "    # i = 0\n",
+    "    \n",
+    "    for dicti in starlist:\n",
+    "        d = {}\n",
+    "        d['starname'] = dicti['name']\n",
+    "        d['gender'] = dicti['gender']\n",
+    "        \n",
+    "        helper_d = helper_fun(dicti['page'])\n",
+    "        \n",
+    "        d['year_born'] = helper_d['year_born']\n",
+    "        d['first_movie'] = helper_d['first_movie']\n",
+    "        d['year_first_movie'] = helper_d['year_first_movie']\n",
+    "        d['credits'] = helper_d['credits']\n",
+    "        \n",
+    "        listD.append(d)\n",
+    "        \n",
+    "        # troubleshoot\n",
+    "        # i = 0\n",
+    "    \n",
+    "    return(listD)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 533,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "star_table = create_star_table(starlist)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 732,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# check your code\n",
+    "# clear/remove output before making the pdf file\n",
+    "# star_table"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Your output should look like this (the order of elements is not important):\n",
+    "```\n",
+    "[{'name': 'Gal Gadot',\n",
+    "  'gender': 1,\n",
+    "  'year_born': '1985',\n",
+    "  'first_movie': 'Bubot',\n",
+    "  'year_first_movie': '2007',\n",
+    "  'credits': '25'},\n",
+    " {'name': 'Tom Hardy',\n",
+    "  'gender': 0,\n",
+    "  'year_born': '1977',\n",
+    "  'first_movie': 'Tommaso',\n",
+    "  'year_first_movie': '2001',\n",
+    "  'credits': '55'},\n",
+    "  \n",
+    "...\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**2.5 Now that you have scraped all the info you need, it's a good practice to save the last data structure you ...**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 536,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "import json"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 537,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "with open('starinfo.json', 'w') as out:\n",
+    "    json.dump(star_table, out)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "To check your JSON saving, re-open the JSON file and reload the code"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 733,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "with open(\"starinfo.json\", \"r\") as fd:\n",
+    "    star_table = json.load(fd)\n",
+    "    \n",
+    "# output should be the same\n",
+    "# clear/remove output before making the pdf file\n",
+    "# star_table"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**2.6 Import the contents of the staff's JSON file (`data/staff_starinfo.json`) into a pandas dataframe. ...**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 645,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "with open('data/staff_starinfo.json') as f:\n",
+    "    staff_star_json = json.load(f)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 646,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "staff_star_json_str = json.dumps(staff_star_json)\n",
+    "df = pd.read_json(staff_star_json_str)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 647,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style>\n",
+       "    .dataframe thead tr:only-child th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: left;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>credits</th>\n",
+       "      <th>first_movie</th>\n",
+       "      <th>gender</th>\n",
+       "      <th>name</th>\n",
+       "      <th>year_born</th>\n",
+       "      <th>year_first_movie</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>25</td>\n",
+       "      <td>Bubot</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Gal Gadot</td>\n",
+       "      <td>1985</td>\n",
+       "      <td>2007</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>55</td>\n",
+       "      <td>Tommaso</td>\n",
+       "      <td>0</td>\n",
+       "      <td>Tom Hardy</td>\n",
+       "      <td>1977</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>17</td>\n",
+       "      <td>Doctors</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Emilia Clarke</td>\n",
+       "      <td>1986</td>\n",
+       "      <td>2009</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>51</td>\n",
+       "      <td>All My Children</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Alexandra Daddario</td>\n",
+       "      <td>1986</td>\n",
+       "      <td>2002-2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>30</td>\n",
+       "      <td>Järngänget</td>\n",
+       "      <td>0</td>\n",
+       "      <td>Bill Skarsgård</td>\n",
+       "      <td>1990</td>\n",
+       "      <td>2000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   credits      first_movie  gender                name  year_born year_first_movie\n",
+       "0       25            Bubot       1           Gal Gadot       1985             2007\n",
+       "1       55          Tommaso       0           Tom Hardy       1977             2001\n",
+       "2       17          Doctors       1       Emilia Clarke       1986             2009\n",
+       "3       51  All My Children       1  Alexandra Daddario       1986        2002-2003\n",
+       "4       30       Järngänget       0      Bill Skarsgård       1990             2000"
+      ]
+     },
+     "execution_count": 647,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 648,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "credits              int64\n",
+      "first_movie         object\n",
+      "gender               int64\n",
+      "name                object\n",
+      "year_born            int64\n",
+      "year_first_movie    object\n",
+      "dtype: object\n",
+      "(100, 6)\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(df.dtypes)\n",
+    "print(df.shape)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We see that the `credits` column is of type `integer`; this is fine. \n",
+    "\n",
+    "We see that `first_movie` column is of type `object`, which makes sense because movie names are strings.\n",
+    "\n",
+    "We see that `gender` is of type `integer`; we should change this to a boolean to better represent the data.\n",
+    "\n",
+    "We see that `name` column is of type `object`, which makes sense because names are strings.\n",
+    "\n",
+    "We see that the `year_born` column is of type `integer`. Although technically, the years are dates, it is fine to treat the years as numbers. \n",
+    "\n",
+    "We see that the `year_first_movie` column is of type `object`; this should be an integer, but we say that some of the values for the year of a star's first movie are given by a range or other complex formatting, meaning we cannot simply convert the `dtype` to an `int`. We can side step the latter by removing all these complicatios with `df = df[df['year_first_movie'].str.isnumeric]` and then creating the new column. Doing this means, that we lose `10` entries, however. Instead, we will correct these errors."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 649,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "credits              int64\n",
+      "first_movie         object\n",
+      "gender                bool\n",
+      "name                object\n",
+      "year_born            int64\n",
+      "year_first_movie    object\n",
+      "dtype: object\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style>\n",
+       "    .dataframe thead tr:only-child th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: left;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>credits</th>\n",
+       "      <th>first_movie</th>\n",
+       "      <th>gender</th>\n",
+       "      <th>name</th>\n",
+       "      <th>year_born</th>\n",
+       "      <th>year_first_movie</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>25</td>\n",
+       "      <td>Bubot</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Gal Gadot</td>\n",
+       "      <td>1985</td>\n",
+       "      <td>2007</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>55</td>\n",
+       "      <td>Tommaso</td>\n",
+       "      <td>False</td>\n",
+       "      <td>Tom Hardy</td>\n",
+       "      <td>1977</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>17</td>\n",
+       "      <td>Doctors</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Emilia Clarke</td>\n",
+       "      <td>1986</td>\n",
+       "      <td>2009</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>51</td>\n",
+       "      <td>All My Children</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Alexandra Daddario</td>\n",
+       "      <td>1986</td>\n",
+       "      <td>2002-2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>30</td>\n",
+       "      <td>Järngänget</td>\n",
+       "      <td>False</td>\n",
+       "      <td>Bill Skarsgård</td>\n",
+       "      <td>1990</td>\n",
+       "      <td>2000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   credits      first_movie  gender                name  year_born year_first_movie\n",
+       "0       25            Bubot    True           Gal Gadot       1985             2007\n",
+       "1       55          Tommaso   False           Tom Hardy       1977             2001\n",
+       "2       17          Doctors    True       Emilia Clarke       1986             2009\n",
+       "3       51  All My Children    True  Alexandra Daddario       1986        2002-2003\n",
+       "4       30       Järngänget   False      Bill Skarsgård       1990             2000"
+      ]
+     },
+     "execution_count": 649,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# change gender dtype to boolean \n",
+    "df['gender'] = df['gender'].astype('bool')\n",
+    "print(df.dtypes)\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 650,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "removing the complications in the column of year_first movie\n",
+      "means we leave out 10 entries\n"
+     ]
+    }
+   ],
+   "source": [
+    "# fid the entries in year_first_movie which have the bad formatting\n",
+    "# i.e. these entried won't be able to be converted to an int\n",
+    "bool_of_complications = df['year_first_movie'].str.isnumeric()\n",
+    "print('removing the complications in the column of year_first movie')\n",
+    "print(f'means we leave out {df.shape[0] - sum(bool_of_complications)} entries')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Let us look at these complicatons."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 651,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style>\n",
+       "    .dataframe thead tr:only-child th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: left;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>credits</th>\n",
+       "      <th>first_movie</th>\n",
+       "      <th>gender</th>\n",
+       "      <th>name</th>\n",
+       "      <th>year_born</th>\n",
+       "      <th>year_first_movie</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>51</td>\n",
+       "      <td>All My Children</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Alexandra Daddario</td>\n",
+       "      <td>1986</td>\n",
+       "      <td>2002-2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>23</th>\n",
+       "      <td>20</td>\n",
+       "      <td>Anna Karenina</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Cara Delevingne</td>\n",
+       "      <td>1992</td>\n",
+       "      <td>2012/I</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>29</th>\n",
+       "      <td>54</td>\n",
+       "      <td>The Yellow Rose</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Robin Wright</td>\n",
+       "      <td>1966</td>\n",
+       "      <td>1983-1984</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>33</th>\n",
+       "      <td>4</td>\n",
+       "      <td>The Refugees</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Dafne Keen</td>\n",
+       "      <td>1966</td>\n",
+       "      <td>2014-2015</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46</th>\n",
+       "      <td>27</td>\n",
+       "      <td>Baywatch</td>\n",
+       "      <td>False</td>\n",
+       "      <td>Jason Momoa</td>\n",
+       "      <td>1979</td>\n",
+       "      <td>1999-2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>60</th>\n",
+       "      <td>35</td>\n",
+       "      <td>Grace Under Fire</td>\n",
+       "      <td>False</td>\n",
+       "      <td>Cole Sprouse</td>\n",
+       "      <td>1992</td>\n",
+       "      <td>1993-1998</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>77</th>\n",
+       "      <td>25</td>\n",
+       "      <td>Nya tider</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Rebecca Ferguson</td>\n",
+       "      <td>1983</td>\n",
+       "      <td>1999-2000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>78</th>\n",
+       "      <td>27</td>\n",
+       "      <td>The Dreamer</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Julia Garner</td>\n",
+       "      <td>1994</td>\n",
+       "      <td>2010/II</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>86</th>\n",
+       "      <td>4</td>\n",
+       "      <td>Moana</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Auli'i Cravalho</td>\n",
+       "      <td>2000</td>\n",
+       "      <td>2016/I</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>96</th>\n",
+       "      <td>22</td>\n",
+       "      <td>La vie devant nous</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Elodie Yung</td>\n",
+       "      <td>1981</td>\n",
+       "      <td>2002-2003</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    credits         first_movie  gender                name  year_born year_first_movie\n",
+       "3        51     All My Children    True  Alexandra Daddario       1986        2002-2003\n",
+       "23       20       Anna Karenina    True     Cara Delevingne       1992           2012/I\n",
+       "29       54     The Yellow Rose    True        Robin Wright       1966        1983-1984\n",
+       "33        4        The Refugees    True          Dafne Keen       1966        2014-2015\n",
+       "46       27            Baywatch   False         Jason Momoa       1979        1999-2001\n",
+       "60       35    Grace Under Fire   False        Cole Sprouse       1992        1993-1998\n",
+       "77       25           Nya tider    True    Rebecca Ferguson       1983        1999-2000\n",
+       "78       27         The Dreamer    True        Julia Garner       1994          2010/II\n",
+       "86        4               Moana    True     Auli'i Cravalho       2000           2016/I\n",
+       "96       22  La vie devant nous    True         Elodie Yung       1981        2002-2003"
+      ]
+     },
+     "execution_count": 651,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df[~bool_of_complications]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Since we only have a few, we can adress them manually, but we can code it. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 652,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "credits              int64\n",
+      "first_movie         object\n",
+      "gender                bool\n",
+      "name                object\n",
+      "year_born            int64\n",
+      "year_first_movie     int64\n",
+      "dtype: object\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style>\n",
+       "    .dataframe thead tr:only-child th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: left;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>credits</th>\n",
+       "      <th>first_movie</th>\n",
+       "      <th>gender</th>\n",
+       "      <th>name</th>\n",
+       "      <th>year_born</th>\n",
+       "      <th>year_first_movie</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>25</td>\n",
+       "      <td>Bubot</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Gal Gadot</td>\n",
+       "      <td>1985</td>\n",
+       "      <td>2007</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>55</td>\n",
+       "      <td>Tommaso</td>\n",
+       "      <td>False</td>\n",
+       "      <td>Tom Hardy</td>\n",
+       "      <td>1977</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>17</td>\n",
+       "      <td>Doctors</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Emilia Clarke</td>\n",
+       "      <td>1986</td>\n",
+       "      <td>2009</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>51</td>\n",
+       "      <td>All My Children</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Alexandra Daddario</td>\n",
+       "      <td>1986</td>\n",
+       "      <td>2002</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>30</td>\n",
+       "      <td>Järngänget</td>\n",
+       "      <td>False</td>\n",
+       "      <td>Bill Skarsgård</td>\n",
+       "      <td>1990</td>\n",
+       "      <td>2000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   credits      first_movie  gender                name  year_born  year_first_movie\n",
+       "0       25            Bubot    True           Gal Gadot       1985              2007\n",
+       "1       55          Tommaso   False           Tom Hardy       1977              2001\n",
+       "2       17          Doctors    True       Emilia Clarke       1986              2009\n",
+       "3       51  All My Children    True  Alexandra Daddario       1986              2002\n",
+       "4       30       Järngänget   False      Bill Skarsgård       1990              2000"
+      ]
+     },
+     "execution_count": 652,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# if we wanted to remove the complications, we could use:\n",
+    "# df = df[df['year_first_movie'].str.isnumeric()]\n",
+    "# instead, we will correct them\n",
+    "\n",
+    "# do some processing\n",
+    "df.loc[~bool_of_complications, 'year_first_movie'] = df[~bool_of_complications]['year_first_movie'].map(lambda x: re.search('(\\d{4})', x).group())\n",
+    "df['year_first_movie'] = df['year_first_movie'].astype('int')\n",
+    "print(df.dtypes)\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 653,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style>\n",
+       "    .dataframe thead tr:only-child th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: left;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>credits</th>\n",
+       "      <th>first_movie</th>\n",
+       "      <th>gender</th>\n",
+       "      <th>name</th>\n",
+       "      <th>year_born</th>\n",
+       "      <th>year_first_movie</th>\n",
+       "      <th>age_at_first_movie</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>25</td>\n",
+       "      <td>Bubot</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Gal Gadot</td>\n",
+       "      <td>1985</td>\n",
+       "      <td>2007</td>\n",
+       "      <td>22</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>55</td>\n",
+       "      <td>Tommaso</td>\n",
+       "      <td>False</td>\n",
+       "      <td>Tom Hardy</td>\n",
+       "      <td>1977</td>\n",
+       "      <td>2001</td>\n",
+       "      <td>24</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>17</td>\n",
+       "      <td>Doctors</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Emilia Clarke</td>\n",
+       "      <td>1986</td>\n",
+       "      <td>2009</td>\n",
+       "      <td>23</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>51</td>\n",
+       "      <td>All My Children</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Alexandra Daddario</td>\n",
+       "      <td>1986</td>\n",
+       "      <td>2002</td>\n",
+       "      <td>16</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>30</td>\n",
+       "      <td>Järngänget</td>\n",
+       "      <td>False</td>\n",
+       "      <td>Bill Skarsgård</td>\n",
+       "      <td>1990</td>\n",
+       "      <td>2000</td>\n",
+       "      <td>10</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   credits      first_movie  gender                name  year_born  year_first_movie  age_at_first_movie\n",
+       "0       25            Bubot    True           Gal Gadot       1985              2007                  22\n",
+       "1       55          Tommaso   False           Tom Hardy       1977              2001                  24\n",
+       "2       17          Doctors    True       Emilia Clarke       1986              2009                  23\n",
+       "3       51  All My Children    True  Alexandra Daddario       1986              2002                  16\n",
+       "4       30       Järngänget   False      Bill Skarsgård       1990              2000                  10"
+      ]
+     },
+     "execution_count": 653,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# creat the new column\n",
+    "df['age_at_first_movie'] = df['year_first_movie'] - df['year_born']\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 947,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1\n",
+      "0\n"
+     ]
+    }
+   ],
+   "source": [
+    "# check for weird behavior \n",
+    "print(sum(df['age_at_first_movie'] <= 0))\n",
+    "print(sum(df['age_at_first_movie'].isnull()))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We see that there is one value that is negative for the column `age_at_first_movie`. Let's look at this. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 949,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style>\n",
+       "    .dataframe thead tr:only-child th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: left;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>credits</th>\n",
+       "      <th>first_movie</th>\n",
+       "      <th>gender</th>\n",
+       "      <th>name</th>\n",
+       "      <th>year_born</th>\n",
+       "      <th>year_first_movie</th>\n",
+       "      <th>age_at_first_movie</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>63</th>\n",
+       "      <td>32</td>\n",
+       "      <td>Only Yesterday</td>\n",
+       "      <td>True</td>\n",
+       "      <td>Daisy Ridley</td>\n",
+       "      <td>1992</td>\n",
+       "      <td>1991</td>\n",
+       "      <td>-1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    credits     first_movie  gender          name  year_born  year_first_movie  age_at_first_movie\n",
+       "63       32  Only Yesterday    True  Daisy Ridley       1992              1991                  -1"
+      ]
+     },
+     "execution_count": 949,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df[df['age_at_first_movie'] <= 0]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "It seems that Daisy Ridley starting acting before she was born! A quick look online confrims that she was born in 1992. A look at IMOB confirms that \"Only Yesterday\" was listed for the year 1991. A further look uncovers that Daisy's role in the film actually took place in 2016. The discrepeny occurs because \"Only Yesterday\" is in fact a 1991 film, but the English dub for the film was produced in 2016; Daisy was a voice actor for the film in 2016; however, the movie was \"made\" in 1991."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**2.7 You are now ready to answer the following intriguing questions**:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**2.7.1 How many performers made their first movie at 17?**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 657,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "8 performers made their first move at 17\n"
+     ]
+    }
+   ],
+   "source": [
+    "print('{} performers made their first move at 17'.format(sum(df['age_at_first_movie'] == 17)))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**2.7.2 How many performers started as child actors? Define child actor as a person less than 12 years old.** "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 659,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "20 performers started out as child actors\n"
+     ]
+    }
+   ],
+   "source": [
+    "print('{} performers started out as child actors'.format(sum(df['age_at_first_movie'] < 12)))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**2.8 Make a plot of the number of credits versus the name of actor/actress.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 838,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<matplotlib.text.Text at 0x12b0f2860>"
+      ]
+     },
+     "execution_count": 838,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAABCAAAAKyCAYAAAAEkq8XAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz\nAAALEgAACxIB0t1+/AAAIABJREFUeJzs3Xt0FeW5P/AnEMGK0Oox1Przfq1a8Y5ahVasC4+nKFoE\nReMFtVXwwqVKVEDEIigHqgerCEpVEBSLtdZa2yOoVLFYtV5qvVRXRVEUiqhcLCRhfn+4kmNMIBvN\nu3cun89armVmP5l5ZvbM7Nlf3pkUZVmWBQAAAEBCrQrdAAAAAND8CSAAAACA5AQQAAAAQHICCAAA\nACA5AQQAAACQnAACAAAASK640A18GUuXrqg1bYstNovly1fX+7vq8lPXFHpUp6451TWFHtWpa4l1\nTaFHdepaYl1T6FGduqZaV1LSfr31zWYERHFxa3WNqK6Qy1anriXWFXLZ6tSpa5zLVqdOXeNctjp1\nLbGuSrMJIAAAAIDGSwABAAAAJCeAAAAAAJITQAAAAADJCSAAAACA5AQQAAAAQHICCAAAACC54kI3\nAAAAAE1dv7FzG3R+U8u6Nej8vmjhwrdi3Lhr4sYbJ8eVV14Ww4aNimXLlsUbb7weJ5zwX0mWaQQE\nAAAAtGBXXTUmNtlkk3juub/ESy+9kGw5RkAAAABAE7Nmzb/jmmuuivfffz8i1sURR3w//vzn+bFu\n3bo4++yfxCeffBL33HNXtGrVKjp12i/OP//CWLJkSVx88aDIsiy23PI/qufVq1ePmDZtVkyffnv8\n+9//jsMPPyTeeGNh/P73D0arVq1izz33ioEDL/nKPQsgAAAAoIm5//7ZsfXW28RVV42JVauWxe9+\n94do3759jB07IT755OPo3/+cuPXWabHpppvG1VcPj7/85c/xzDNPxQ9+0D2OO+6EmDPnj/HrX/+q\nen6tWrWK0047MxYufCuOOuqo+J//OSGGDBkae+65d/z617+KioqKKC7+ahGCAAIAAACamLffXhiH\nHvrdiIjYcccdY/PN28f22+8QERGLFr0TH320PH7604siImL16tXx7ruL4q233oof/OCz5zvss8++\nNQKIL7r88hExc+b0WLz4hth7730apGfPgAAAAIAmZocddopXXvl7RES88847ccstv4iios++4n/r\nW/8vOnb8Zlx//U1x442To1evPrH33vvELrvsEi+//GJERPXvfl5RUVFk2bqIiHjggfvjpz+9LG68\ncXL84x+vNcizIYyAAAAAgCbm+ONPjDFjRsUFF/w4WrWK6NPn1Pj4448iImKLLbaIPn1OjQsu+HFU\nVlbGt761TXTrdnScf/75cfHFg+KRR/4Y22zz/2rNc5dddo0775wav/vd/rHLLrvGgAHnxmabbRYl\nJSWx117f+co9CyAAAADgK5pa1i1KStrH0qUr6q3NtW5D2rZtGyNHjl7v/Lp3Pza6dz+2xrQtt2wf\nEybcWGtev/rVbyMiYvfdvx0zZ95XPb8ePXp+pR6/yC0YAAAAQHICCAAAACA5AQQAAACQnAACAAAA\nSE4AAQAAACQngAAAAACSE0AAAAAAyQkgAAAAgOQEEAAAAEByxYVuAACai35j59aaNrWsWwE6AQBo\nfIyAAAAAAJITQAAAAADJCSAAAACA5AQQAAAAQHJJA4gXXnghSktLIyLilVdeib59+0ZpaWmcffbZ\n8a9//SsiImbNmhUnnnhi9O7dOx599NGU7QAAAAAFkuyvYEyZMiUeeOCB+NrXvhYREaNHj47hw4fH\nnnvuGXfffXdMmTIlzjnnnJg2bVrMnj071qxZE3379o3DDz882rRpk6otAAAAoACSjYDYfvvtY+LE\nidU/T5gwIfbcc8+IiKisrIy2bdvGiy++GPvvv3+0adMm2rdvH9tvv328+uqrqVoCAAAACqQoy7Is\n1cwXLVoUgwcPjlmzZlVPe+655+KKK66Iu+66K/70pz/F66+/HpdccklERFx66aXRs2fP+O53v7vB\n+VZUVEZxcetUbQPAl9JjyG9qTfvt+OML0AkAQOOT7BaMujz00ENx8803x+TJk2PLLbeMzTffPFat\nWlX9+qpVq6J9+/b1zmf58tW1ppWUtI+lS1fU+7vq8lPXFHpUp6451TWFHltaXZX6ahv7eqj7anVN\noUd16lpiXVPoUZ26plpXUrL+7/R5+ysYv/nNb2L69Okxbdq02G677SIiolOnTvHss8/GmjVrYsWK\nFfHmm2/G7rvvnq+WAAAAgDzJywiIysrKGD16dHzrW9+KCy+8MCIiDj744LjooouitLQ0+vbtG1mW\nxaBBg6Jt27b5aAkAAADIo6QBxLbbblv9/Ienn366zprevXtH7969U7YBAAAAFFjebsEAAAAAWi4B\nBAAAAJCcAAIAAABITgABAAAAJCeAAAAAAJITQAAAAADJCSAAAACA5AQQAAAAQHICCAAAACA5AQQA\nAACQnAACAAAASE4AAQAAACQngAAAAACSE0AAAAAAyQkgAAAAgOQEEAAAAEByAggAAAAgOQEEAAAA\nkJwAAgAAAEhOAAEAAAAkJ4AAAAAAkhNAAAAAAMkJIAAAAIDkBBAAAABAcgIIAAAAIDkBBAAAAJCc\nAAIAAABITgABAAAAJCeAAAAAAJITQAAAAADJCSAAAACA5AQQAAAAQHICCAAAACA5AQQAAACQnAAC\nAAAASE4AAQAAACQngAAAAACSE0AAAAAAyQkgAAAAgOQEEAAAAEByAggAAAAgOQEEAAAAkJwAAgAA\nAEhOAAEAAAAkJ4AAAAAAkhNAAAAAAMkJIAAAAIDkBBAAAABAcgIIAAAAIDkBBAAAAJCcAAIAAABI\nTgABAAAAJCeAAAAAAJITQAAAAADJCSAAAACA5AQQAAAAQHICCAAAACA5AQQAAACQnAACAAAASK64\n0A0AAAA0Jv3Gzq01bWpZtwJ0As2LERAAAABAcgIIAAAAIDkBBAAAAJCcAAIAAABITgABAAAAJCeA\nAAAAAJITQAAAAADJCSAAAACA5AQQAAAAQHICCAAAACA5AQQAAACQnAACAAAASE4AAQAAACQngAAA\nAACSE0AAAAAAyQkgAAAAgOQEEAAAAEBySQOIF154IUpLSyMiYuHChXHKKadE375948orr4x169ZF\nRMSsWbPixBNPjN69e8ejjz6ash0AAACgQJIFEFOmTIlhw4bFmjVrIiJizJgxMXDgwJgxY0ZkWRZz\n5syJpUuXxrRp0+Luu++O2267LSZMmBBr165N1RIAAABQIMkCiO233z4mTpxY/fPLL78cnTt3joiI\nrl27xvz58+PFF1+M/fffP9q0aRPt27eP7bffPl599dVULQEAAAAFUpRlWZZq5osWLYrBgwfHrFmz\n4ogjjognnngiIiKeeuqpmD17dnTp0iVef/31uOSSSyIi4tJLL42ePXvGd7/73Q3Ot6KiMoqLW6dq\nGwC+lB5DflNr2m/HH1+ATgD4KpzPIY3ifC2oVav/G2yxatWq6NChQ2y++eaxatWqGtPbt29f77yW\nL19da1pJSftYunRFvb+rLj91TaFHdeqaU11T6LGl1VWpr7axr4e6r1bXFHpUp64l1m1sbYTzuTp1\nudaVlKz/O33e/grGXnvtFQsWLIiIiHnz5sVBBx0UnTp1imeffTbWrFkTK1asiDfffDN23333fLUE\n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\nBydtDgAAAGgeNhhAzJw5M372s5/FxIkTa71WVFQUd955Z7LGAAAAgOZjgwHEz372s4iImDZtWl6a\nAQAAGp9+Y+fWmja1rFsBOgGasg0GEKWlpVFUVLTe142AAAAAAHKxwQDiwgsvjIiIWbNmxaabbho9\ne/aM4uLiePDBB2PNmjV5aRAAAABo+jYYQHTu3DkiPvtrGLNnz66evt9++8WJJ56YtjMAAACg2WiV\nS9GaNWvin//8Z/XPr732WlRUVCRrCgAAAGheNjgCokpZWVmUlpbGN7/5zVi3bl18+OGHMX78+NS9\nAQAAAM1ETgHEEUccEXPnzo3XX389ioqKYo899oji4px+FQAAACC3WzA+/vjjGDVqVFx33XWxzTbb\nxPDhw+Pjjz9O3RsAAADQTOQ0jGH48OFx+OGHx4svvhjt2rWLjh07xiWXXBKTJ09O3R8AG+DvsgMA\n0FTkNAJi0aJF0adPn2jVqlW0adMmBg0aFO+//37q3gAAAIBmIqcAonXr1rFixYooKiqKiIi33nor\nWrXK6VcBAAAAcrsF46KLLorS0tJYvHhx9O/fP55//vm45pprUvcGAAAANBM5BRAlJSUxderUePHF\nF6OysjJGjRoVW221VereAAAAgGYipwBi0KBB8fvf/z6+//3vJ24HAAAAaI5yCiB23XXXuPHGG2Pf\nffeNTTfdtHr6wQcfnKwxAAAAoPnIKYD46KOP4qGHHooFCxbEp59+GkuWLIkdd9wx7rzzztT9AQAA\nAM1ATn/K4uijj442bdrEtGnT4vrrr4927drFsccem7o3AAAAoJnIaQTErFmz4t57742IiG233Tbu\nu+++6N27d5x88slJmwMotH5j59aaNrWsWwE6oZDsBwDUxecDbJycAojy8vLYZJNNqn/+/P9vrFtu\nuSXmzp0b5eXlccopp0Tnzp2jrKwsioqKYrfddosrr7wyWrXKaWAGAAAA0ETk9E3/Bz/4QZxxxhkx\nffr0mD59evTr1y+OOuqojV7YggUL4q9//WvMnDkzpk2bFu+//36MGTMmBg4cGDNmzIgsy2LOnDkb\nPV8AAACgccspgLjkkkuitLQ0/vnPf8Y777wTp59+egwcOHCjF/bEE0/E7rvvHgMGDIjzzjsvvv/9\n78fLL78cnTt3joiIrl27xvz58zd6vgAAAEDjltMtGBERxxxzTBxzzDFfaWHLly+P9957LyZNmhSL\nFi2K888/P7Isi6KiooiIaNeuXaxYsaLe+WyxxWZRXNy61vSSkvY59aEuP3WFXLa6r1bb2NejkNsv\nl/rG3l+KZbe0ukLNs7FvF3X5q23s69zS6nKtb+zr0djXt6GXm6rWMfzlaxv7eqj7anURGxFANIRv\nfOMbsfPOO0ebNm1i5513jrZt28b7779f/fqqVauiQ4cO9c5n+fLVtaaVlLSPpUvrDy/U5aeuKfTY\n0uqq1Ffb2Nej0NsvYsPbsLH3l2LZLa2uSq61DTXPxr5d1DVMbYRjuKnVfV5LOIY/L5/r29DL/TLL\nbqjzfmN/j12DqvuqdRsKJPL6tMcDDzww/vSnP0WWZfHBBx/Ep59+GocddlgsWLAgIiLmzZsXBx10\nUD5bAgAAAPIgryMgjjzyyPjLX/4SvXr1iizLYsSIEbHtttvG8OHDY8KECbHzzjtH9+7d89kSAAAA\nkAd5DSAiIi699NJa06ZPn57vNgAAgAbWb+zcWtOmlnX70nVA85LXWzAAAACAlkkAAQAAACQngAAA\nAACSE0AAAAAAyeX9IZQAABSWBwACUAhGQAAAAADJCSAAAACA5AQQAAAAQHKeAQFNkHt3AaBp8JkN\nDcOx1DwYAQEAAAAkJ4AAAAAAkhNAAAAAAMl5BgQAAETd95hHuM8coKEYAQEAAAAkJ4AAAAAAkhNA\nAAAAAMm1mGdA+LuxAAAAUDhGQAAAAADJCSAAAACA5AQQAAAAQHICCAAAACC5FvMQSoCUPOgWAAA2\nzAgIAAAAIDkBBAAAAJCcAAIAAABIzjMgACg4z9CADXOMANAcGAEBAAAAJCeAAAAAAJITQAAAAADJ\nCSAAAACA5AQQAAAAQHICCAAAACA5AQQAAACQXHGhG2iq/D3uutkuAADQtLiGJ1+MgAAAAACSE0AA\nAAAAyQkgAAAAgOQ8AwIA+NLcNwwA5MoICAAAACA5AQQAAACQnAACAAAASE4AAQAAACTnIZQAQIvn\nYZpASs4x8BkjIAAAAIDkBBAAAABAcgIIAAAAIDnPgIA8cN8fAAD55hqUxsYICAAAACA5AQQAAACQ\nnAACAAAASE4AAQAAACQngAAAAACSE0AAAAAAyQkgAAAAgOSKC90AAEBz02/s3FrTppZ1K0AnADRF\nzfVzxAgIAAAAIDkBBAAAAJCcAAIAAABITgABAAAAJOchlLQozfVhLgAAAI2dERAAAABAcgIIAAAA\n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\nK1fG5ptvXv1z69ato6KiooAdAQAAAA2pKMuyrNBNjBkzJvbdd9849thjIyKia9euMW/evAJ3BQAA\nADSURjEC4oADDqgOHJ5//vnYfffdC9wRAAAA0JAaxQiIqr+C8frrr0eWZXHNNdfELrvsUui2AAAA\ngAbSKAIIAAAAoHlrFLdgAAAAAM2bAAIAAABITgABAAAAJNciAohHHnkkKisrC91GLZdddllERNx9\n990b/buLFy9u6HbYSH/+858L3ULO1q1bl6S2Ph999FGDzYvG45lnnqnx8+9+97sCdVK3V155pdAt\ntBgrVqwodAsN4qWXXqrx89NPP523ZX/44YfxwgsvNNrz5cqVK+PVV1+N1atX522ZDz/8cFRUVORt\neV/G0qVLC91CXi1atKjGzwsWLChQJ1/NbbfdVugWWqTy8vImMc+voil9L9iQRx55pEG/C9SlOOnc\nE7vpppuif//+1T+PHz8+hgwZUqvu2WefjYkTJ0aXLl2iV69eseOOO9Y5v8rKyrjvvvvivffei0MP\nPTR222232HLLLeusffzxx+Mf//hH7LjjjvGDH/ygxmv333//envu2bNn9f8///zzce2118Yf/vCH\neO+992rUDR48uNbv3nrrrdGhQ4f45JNP4r777osuXbpUhxifN3/+/KioqIgsy+Lqq6+Oiy++OHr0\n6FGr7qOPPoonnniiunbJkiXxk5/8pPr10tLSKCoqqnM97rzzzlrTFi9eHA8++GCsWbOmetoFF1xQ\n5++/9dZbsXDhwthjjz3im9/85nqXs27dusiyLP76179Gp06dok2bNrVqcn3fNub9zaW/iRMnxqGH\nHlrn73/eypUrY968ebF27drqaZ/fD6q8/vrrMXLkyPjkk0/iuOOOi9122y2OPPLIWnWvvPJK3HPP\nPTW285gxY2rVPfDAA9G6detYu3ZtXHfddXHOOefE2WefXWePudb++c9/rl7nf//733HNNdfEqFGj\natU9/fTTMWrUqKisrIxjjjkmttlmmzjppJNq1eV6DOe6T1933XVx6aWX1rmOERHPPffcel874IAD\nak3LdZ8ZNWpUjBgxovrnSy+9NK677rr1Lqs+ue4z999/f9xyyy2xdu3ayLIsioqKYs6cOV96uTfe\neGNMnz49iov/76PhiSeeqFV35plnxrnnnhsXX3xxRETcc8898V//9V+16h588MH44Q9/GBGfXaxf\ndtllceutt9bof33qWt/XXnst7r333hr7/tVXX12r7uabb44lS5bE8ccfHz169IjNN9+8xutV71ef\nPn2qj+2q7VdXIFzfelT54vl4k002ia233jpOPfXU+PrXv149/cknn4xf/vKXNd7fus6pERFz586N\n2bNn16idMmVK9f9XVFREcXFxjder1HW+XLhwYTz88MPVF25Lliyp8xh+9dVX49NPP41WrVrFhAkT\n4rzzzovDDjusVt2Pf/zjmDlzZp29f94XP0+qts35558f2267bbz00kuxzz771Lm/HXHEEbWm5XqM\nfPDBB7FixYpo3bp1TJkyJUpLS2PPPfesfv2ZZ56JN954I26//fY466yzIuKz437GjBnx4IMP1rte\nG/L000/H22+/HZ06dYodd9yxzvfjrrvuijvuuCN22223eOONN6J///5x/PHH16obNWpUnHTSSTV6\n/7x77rlnvX306dOn1rRct9/DDz8ckyZNqj6XFxUV1Thnf35+v/jFL+LNN9+MHXfcMfr37x/f+MY3\natXles7629/+FjfddFMcfvjh0atXr/X+ZbRcj7mIiGXLltU4d2yzzTZ1zrOioiJeeumlGtdGVcf/\n51100UWx5ZZbRq9eveJ73/tetGr11f5NL9drqIbe1vUdI1WOOeaYGDlyZPTq1SsiIn7xi1/EIYcc\nUv36F69jP6+ubZ3rciNyuybLdX0ff/zxOPPMM6N169Z1Lquu6+oqdV1rPf/883HffffVOKfWFXKs\nXLkypkyZEkuWLIkjjzwy9thjj9hhhx2qX+/WrVuN9SouLo6Kiopo06ZN/P73v681v1yvGSMinnrq\nqXj77bdj3333jZ122inatm1bqybLsnjppZdq7H8HH3xwnfPb0HegKlOmTIlzzz03Ij777C4rK4tf\n//rXteo25vNw5syZcfvtt1cfm8XFxfHHP/6xVt0HH3wQ48aNiw8//DCOOeaY2GOPPWLfffetVZfr\n51yu10a5fi/YmGu3XN67G2+8scbPVefBY489NjbZZJPq6bfddluccMIJ6/3u8/ll3nDDDdGtW7fo\n1atXbLfddnXWvfrqq3HFFVfE+++/HyUlJTF69OjYe++961v9iGiiAcS9994bv/rVr+LNN9+MefPm\nRcRnFwwVFRV1fnkZOnRoVFRUxGOPPRbjxo2Ljz/+OE466aT44Q9/WOMENGLEiOjYsWPMnz8/9tln\nnxg6dGiNC70q48ePj7feeisOPPDAuP/+++OZZ56JsrKy6tfffPPNiPjspPS1r30t9t9//+oPs89/\nwE+ePDmeffbZeOyxx2KnnXaqd73/+Mc/xvTp0+Occ86Jhx56KE4//fQ6637+85/H+PHj46qrroqZ\nM2fGwIED6/yydsEFF8TOO+8cr7/+erRt2za+9rWv1Xj9qquuiojPPmSOOuqoOPDAA+PFF1+MRx99\ntM7lXnzxxXHYYYfFt771rQ2ux/Tp0+N///d/4+OPP46ePXvG22+/XePLW5XRo0fHLrvsEu+99168\n/PLLsdVWW8W1115bqy7X9y3Xulz7KyoqigEDBsROO+1UfeFRV3DUv3//6NixY/V2WV/YMnr06Bgz\nZkwMGzYsevXqFeecc06dHyZlZWVx2mmnxdZbb13nfKrceeedMWXKlBg8eHA8/vjj0a9fv/UGELnW\n3nDDDdGuXbuorKyMYcOGxXHHHVfn/G644YaYPn16XHjhhXHeeefFKaecUiOA2NhjONd9+rXXXouV\nK1fW+sJZ5fbbb4+Iz/4lp7y8PL7zne/E3//+92jfvn1Mnz69Vn19+8xdd90VN998c3z00UfVH4JZ\nlsWuu+5a5/LrC/2q5LrPTJkyJSZNmlTvMTdp0qS49dZbY9NNN62eVteH56OPPhqPPfZYjbq67L//\n/lFZWRnDhw+v88trld/85jfRrl27WLNmTfz85z+Piy66qMbruZ4rqwwdOjT69OlT7/r+z//8Tyxf\nvjweeOCBGDBgQGy99dZx0kknxUEHHRQRUf0FasKECTV+b33/mlLfelRZs2ZNbLfddnHQQQfFCy+8\nEC+99FJsueWWMXTo0Jg0aVJ13ZgxY+Lyyy+v9xiOiLj22mtj1KhRtb5MVRk6dGiMHz+++sthRGzw\ngmbIkCFx9NFHx3PPPRcdO3Zc779qjxw5MoYPHx4TJ06MQYMGxbhx4+q8MPv6178ed9xxR43zYF2B\nwbbbbhsHHHBAHHjggfH888/Ho48+Gvvtt19cccUVcccdd8RTTz0V++yzT52jaeqaX67HyJAhQ+KC\nCy6IGTNmRPfu3eOaa66JadOmVb/eoUOH+Ne//hVr166t/hftoqKiuOSSS+qcX67H0vXXXx/vvPNO\n/POf/4yioqK45ZZbYvz48bXq7r333vjtb38bbdu2jU8//TROO+20OgOI73//+zFp0qT44IMP4rjj\njovjjjuuxnluY/81Ptftd/vtt8esWbPi7LPPjv79+8ePfvSjOgOIyy+/PA466KA47rjj4umnn46y\nsrIa+3yVXM9ZP/3pT2Pw4MExb968uP7662Pp0qXRu3fv6NGjR40L6lyPuZEjR8a8efOiY8eOGwwb\nIz67NiovL48lS5ZEZWVldOzYsc4AYubMmfHGG2/E7Nmz4+abb47DDjuszov1XPeZXK+hGnpb13eM\nVOnUqVMsWLAgli5dGueff3588Y/oDRo0KCI++5xbtWpVdai21VZb1fnFM9fl5npNluv6Ll++PLp0\n6RLbbrttFBUV1doXjj322Ij47P3df//944ADDoiXXnqp1iipKiNHjoxzzjkn/vCHP8Tuu+9eZxgc\n8dn71rVr1/jLX/4SW221VVxxxRU1rjsefvjhyLIsrrrqqjj55JOjU6dO8fe//z1mzJhR5/xyvWac\nMGFCvP/++/Hmm29GmzZtYvLkybU++yIiLrzwwli2bFmNc0JdAUR934Gq/OMf/4iZM2fG6tWr4/77\n74+RI0fWuR4b83k4Y8aMmDZtWtx8881xzDHHxB133FFn3fDhw+Oss86Km266KQ466KAoKyuLWbNm\n1arL9XMu12ujXL8X5Lqv5vrevfbaa9G2bdvq8+DixYujpKQknnjiiRg3blx13WabbRYDBgyIkpKS\n+NGPfhRdu3at89w/fPjwWLt2bcyZMydGjRoV5eXl1dfPnzd69OgYPXp0fPvb345XXnklrrrqqtxH\n9WdN0Jo1a7J33nknGzZsWLZo0aJs0aJF2XvvvZetWbNmvb/z5JNPZoMHD8569uyZTZkyJbvllluy\nc845p0bNaaedlmVZlpWWlmZZlmV9+vSpc16fn75u3bqsV69eddb169evxs9nnXVWna+XlZWtt+8v\nLvfdd9/NBg0alGVZlp100kl11p122mnZypUrsx//+MdZlmXZqaeeWmdd3759q5dfWVm53vU9/fTT\na/xctX2+6Mwzz6x/JbIsO/nkk7PKysrq7X3iiSfWWVfVT1XdF/uokuv7lmtdrv3dd999tf7b0HLr\nU7V+Vf2t7/e+uF+tz6mnnpp9+OGH2YABA7IsW//6bkztsmXLsj59+mQnnHBC9sYbb6x3fl/c1l9c\nl409hnPdp4888shsr732yrp06ZJ17do1+973vldn3bnnnputXbs2y7IsKy8vz84+++yc1mN92+Xm\nm2+uc/oXnXrqqdnw4cOzPn36ZKeffnr2k5/8ZIPLrc/6fv+LevToka1evbreunPPPTcrLy+vt65q\ne9x2223ZgAED1tvvp59+mp1xxhnZySefnC1btmy986vvXLm+ug156623sgkTJmQ9e/bMRo4cmQ0f\nPjy79NJLa9RMnjy5+v9fe+21rGfPnnXOK9f1OOOMM2r8XLUeVefaKl/87NmQqmOyPl88dt566606\n66reu6rPnVNOOWW9dWvWrKne5ut7j8vKymr9V5cvnr+rPi++eCwvXry4xs8PPvhgnfPL9Rg57bTT\nsoqKiur3Zn2fI7/+9a9r/Py73/2uzrpcj6Wq97yqz/V9Xvfr16/6mFu3bl29+/iyZcuywYMHZ/vt\nt182dOjQbOHChbVqnnzyyezuu+/OXnnllezf//53nfPJdftVrUfVfvPFfXl981vffpXrOWvdunXZ\n448/nl188cXZCSeckP3yl7/Mbr311lrbJ9dj7oQTTsgqKytzWnbv3r2zLMuyyy+/PPv000+zk08+\neb21n3zySXbXXXdlpaWl2XnnnZf95Cc/+f/UvXlcjen/P/48RaFtKJGRKGXPEmMsMUiWGcZWaexk\nJ7I1oiwtItSMhkREEjIYQyNjN9bKkmXSrmZKaJEWnZbz+6Pvdb/Pfc51nfvq837//vB8POaBc645\n59z3fS2v5fl6vhRBQUGiMbxzhteG+l/fa941QubA1q1bFVu3bmXu00uWLFF8/PhRoVAoFOXl5RrP\nOZ7v5bXJeK+X2BzK/9Ggen2s50NeJ3sfyz4h94/8yXpuqs+XteZ4bUbevUiTjcgap8kHqq2tVXh4\neChmzZql0T9ryHlI1v/atWsVCgX7mlXvtaZxPOccr23E6xfwzlXeZ6e6dsjcZe1dqampilWrVimG\nDh2q+PnnnxUlJSVqYxISEhReXl6KiRMnKsLCwqifo3q/WHOfhs+SAaGjo4O2bdti06ZNOHnyJNLT\n09G+fXu4urpSxzs6OqJnz55wcXHBV199JbyelpYmGldbW4uioiIA9VQpFp2upqYGdXV10NLSEiLp\nNBQVFaG0tBSGhoYoLi5Wq+8sLi6Gu7s7kpKS1LK+tExJ//79MWPGDAQFBSEgIABDhw6lfq++vj7c\n3Nzg4uKC6OhoJtVGW1sbVVVVqKyshEwm06iTERsbC1tbWzx+/FiUfVCGtbU1Ll68iC5dugj3hMbs\n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\n",
+      "text/plain": [
+       "<matplotlib.figure.Figure at 0x12ad49be0>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "the_plot = df.plot.bar('name', 'credits', figsize=(18,10))\n",
+    "the_plot.set_ylabel('credits')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "From the plot, we can see that the most prolific performer is Sean Young. We can confirm it with code. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 729,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Sean Young\n"
+     ]
+    }
+   ],
+   "source": [
+    "# finding the most prolific performer\n",
+    "print(df[df['credits'] == df['credits'].max()].iloc[0]['name'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<hr style=\"height:2px\">\n",
+    "##  Going the Extra Mile \n",
+    "Be sure to complete problems 1 and 2 before tackling this problem...it is worth only 8 points.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<div class='exercise'> <b>Question 3 [8 pts]: Parsing using Regular Expressions (regex) </b></div>\n",
+    "\n",
+    "Even though scraping HTML with regex is sometimes considered bad practice, you are to use python's **regular expressions** to answer this problem.  Regular expressions are useful to parse strings, text, tweets, etc. in general (for example, you may encounter a non-standard format for dates at some point). Do not use BeautifulSoup to answer this problem.\n",
+    "\n",
+    " **3.1** Write a function called `get_pubs` that takes an .html filename as an input and returns a string containing the HTML page in this file (see definition below). Call this function using `data/publist_super_clean.html` as input and name the returned string `prof_pubs`. \n",
+    " \n",
+    " **3.2** Calculate how many times the author named '`C.M. Friend`' appears in the list of publications. \n",
+    " \n",
+    " **3.3** Find all unique journals and copy them in a variable named `journals`.  \n",
+    " \n",
+    " **3.4** Create a list named `pub_authors` whose elements are strings containing the authors' names for each paper. \n",
+    "    \n",
+    "### Hints\n",
+    "- Look for patterns in the HTML tags that reveal where each piece of information such as the title of the paper, the names of the authors, the journal name, is stored. For example, you might notice that the journal name(s) is contained between the &lt;I&gt; HTML tag. \n",
+    "- Learning about your domain is always a good idea: you want to check the names to make sure that they belong to actual journals. Thus, while journal name(s) is contained between the &lt;I&gt; HTML tag, please note that <i>all</i> strings found between &lt;I&gt; tags may not be journal names.\n",
+    "- Each publication has multiple authors. \n",
+    "- `C.M. Friend` also shows up as `Cynthia M. Friend` in the file.  Count just `C. M. Friend`. \n",
+    "- There is a comma at the end of the string of authors. You can choose to keep it in the string or remove it and put it back when you write the string as a BibTex entry. \n",
+    "- You want to remove duplicates from the list of journals. Duplicates may also occur due to misspellings or spaces, such as: `Nano Lett.`, and `NanoLett.` You can assume that any journals with the same initials (e.g., `NL` for `NanoLett.`) are the same journal.\n",
+    "\n",
+    "### Resources\n",
+    "- **Regular expressions:** a) https://docs.python.org/3.3/library/re.html, b) https://regexone.com, and c) https://docs.python.org/3/howto/regex.html. \n",
+    "- ** HTML:** if you are not familiar with HTML see https://www.w3schools.com/html/ or one of the many tutorials on the internet. \n",
+    "- ** Document Object Model (DOM):** for more on this programming interface for HTML and XML documents see https://www.w3schools.com/js/js_htmldom.asp. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Answers\n",
+    "\n",
+    "** 3.1  Write a function called `get_pubs` that takes an .html filename as an input and returns a string  ... **    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# first import the necessary reg expr library\n",
+    "import re"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# use this file provided\n",
+    "PUB_FILENAME = 'data/publist_super_clean.html'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 843,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def get_pubs(filename):\n",
+    "    with open(filename) as f:\n",
+    "        return(str(f.read()))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 846,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "prof_pubs = get_pubs(PUB_FILENAME)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 933,
+   "metadata": {
+    "collapsed": true,
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "# checking your code \n",
+    "# clear/remove output before creating the pdf file\n",
+    "# print(prof_pubs)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "You should see an HTML page that looks like this (colors are not important)\n",
+    "```html\n",
+    "<LI>\n",
+    "<A HREF=\"Papers/2011/PhysRevB_84_125411_2011.pdf\" target=\"paper244\">\n",
+    "&quot;Approaching the intrinsic band gap in suspended high-mobility graphene nanoribbons&quot;</A>\n",
+    "<BR>Ming-Wei Lin, Cheng Ling, Luis A. Agapito, Nicholas Kioussis, Yiyang Zhang, Mark Ming-Cheng Cheng,\n",
+    "<I>PHYSICAL REVIEW B </I> <b>84</b>,  125411 (2011)\n",
+    "<BR>\n",
+    "</LI>\n",
+    "</OL>\n",
+    "\n",
+    "<OL START=243>\n",
+    "<LI>\n",
+    "<A HREF=\"Papers/2011/PhysRevB_84_035325_2011.pdf\" target=\"paper243\">\n",
+    "&quot;Effect of symmetry breaking on the optical absorption of semiconductor nanoparticles&quot;</A>\n",
+    "<BR>JAdam Gali, Efthimios Kaxiras, Gergely T. Zimanyi, Sheng Meng,\n",
+    "<I>PHYSICAL REVIEW B </I> <b>84</b>,  035325 (2011)\n",
+    "<BR>\n",
+    "</LI>\n",
+    "</OL>\n",
+    "\n",
+    "<OL START=242>\n",
+    "<LI>\n",
+    "<A HREF=\"Papers/2011/PhysRevB_83_054204_2011.pdf\" target=\"paper242\">\n",
+    "&quot;Influence of CH2 content and network defects on the elastic properties of organosilicate glasses&quot;</A>\n",
+    "<BR>Jan M. Knaup, Han Li, Joost J. Vlassak, and Efthimios Kaxiras,\n",
+    "<I>PHYSICAL REVIEW B </I> <b>83</b>,  054204 (2011)\n",
+    "<BR>\n",
+    "</LI>\n",
+    "</OL>\n",
+    "    ```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**3.2 Calculate how many times the author ... **"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 900,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The named author 'C.M. Friend' appears 5 in the list of publications\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(f\"The named author 'C.M. Friend' appears {len(re.findall('C.M. Friend', prof_pubs))} in the list of publications\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**3.3 Find all unique journals and copy ...**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 928,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'2010 ACM/IEEE International Conference for High Performance',\n",
+       " 'ACSNano.',\n",
+       " 'Ab initio',\n",
+       " 'Acta Mater.',\n",
+       " 'Catal. Sci. Technol.',\n",
+       " 'Chem. Eur. J.',\n",
+       " 'Comp. Phys. Comm.',\n",
+       " 'Concurrency Computat.: Pract. Exper.',\n",
+       " 'Energy & Environmental Sci.',\n",
+       " 'Int. J. Cardiovasc. Imaging',\n",
+       " 'J. Chem. Phys.',\n",
+       " 'J. Chem. Theory Comput.',\n",
+       " 'J. Phys. Chem. B',\n",
+       " 'J. Phys. Chem. C',\n",
+       " 'J. Phys. Chem. Lett.',\n",
+       " 'J. Stat. Mech: Th. and Exper.',\n",
+       " 'Langmuir',\n",
+       " 'Molec. Phys.',\n",
+       " 'Nano Lett.',\n",
+       " 'NanoLett.',\n",
+       " 'New J. Phys.',\n",
+       " 'New Journal of Physics',\n",
+       " 'PHYSICAL REVIEW B',\n",
+       " 'Phil. Trans. R. Soc. A',\n",
+       " 'Phys. Rev. B',\n",
+       " 'Phys. Rev. E - Rap. Comm.',\n",
+       " 'Phys. Rev. Lett.',\n",
+       " 'Sci. Model. Simul.',\n",
+       " 'Sol. St. Comm.',\n",
+       " 'Top. Catal.'}"
+      ]
+     },
+     "execution_count": 928,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# journals appear after <I> and end before </I>\n",
+    "journals_pre = set(map(str.strip, re.findall('<I>(.*)</I>', prof_pubs)))\n",
+    "journals_pre"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We see that `New J. Phys.` is the same as `New Journal of Physics`, so we delete the former.\n",
+    "We see that `Nano Lett` and `NanoLett.` are the same, so we delete the latter.\n",
+    "We see that `PHYSICAL REVIEW B` and `Phys. Rev. B` are the same, so we delete the latter."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 929,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "# post processing \n",
+    "# do not run again\n",
+    "journals_pre.remove('New J. Phys.')\n",
+    "journals_pre.remove('NanoLett.')\n",
+    "journals_pre.remove('Phys. Rev. B')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 932,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'2010 ACM/IEEE International Conference for High Performance',\n",
+       " 'ACSNano.',\n",
+       " 'Ab initio',\n",
+       " 'Acta Mater.',\n",
+       " 'Catal. Sci. Technol.',\n",
+       " 'Chem. Eur. J.',\n",
+       " 'Comp. Phys. Comm.',\n",
+       " 'Concurrency Computat.: Pract. Exper.',\n",
+       " 'Energy & Environmental Sci.',\n",
+       " 'Int. J. Cardiovasc. Imaging',\n",
+       " 'J. Chem. Phys.',\n",
+       " 'J. Chem. Theory Comput.',\n",
+       " 'J. Phys. Chem. B',\n",
+       " 'J. Phys. Chem. C',\n",
+       " 'J. Phys. Chem. Lett.',\n",
+       " 'J. Stat. Mech: Th. and Exper.',\n",
+       " 'Langmuir',\n",
+       " 'Molec. Phys.',\n",
+       " 'Nano Lett.',\n",
+       " 'New Journal of Physics',\n",
+       " 'PHYSICAL REVIEW B',\n",
+       " 'Phil. Trans. R. Soc. A',\n",
+       " 'Phys. Rev. E - Rap. Comm.',\n",
+       " 'Phys. Rev. Lett.',\n",
+       " 'Sci. Model. Simul.',\n",
+       " 'Sol. St. Comm.',\n",
+       " 'Top. Catal.'}"
+      ]
+     },
+     "execution_count": 932,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "journals = journals_pre\n",
+    "journals"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Your output should look like this (no duplicates):\n",
+    "```\n",
+    "{'2010 ACM/IEEE International Conference for High Performance',\n",
+    " 'ACSNano.',\n",
+    " 'Ab initio',\n",
+    " 'Acta Mater.',\n",
+    " 'Catal. Sci. Technol.',\n",
+    " 'Chem. Eur. J.',\n",
+    " 'Comp. Phys. Comm.',\n",
+    " 'Concurrency Computat.: Pract. Exper.',\n",
+    " 'Energy & Environmental Sci.',\n",
+    " 'Int. J. Cardiovasc. Imaging',\n",
+    " 'J. Chem. Phys.',\n",
+    " 'J. Chem. Theory Comput.',\n",
+    " 'J. Phys. Chem. B',\n",
+    " 'J. Phys. Chem. C',\n",
+    " 'J. Phys. Chem. Lett.',\n",
+    " 'J. Stat. Mech: Th. and Exper.',\n",
+    " 'Langmuir',\n",
+    " 'Molec. Phys.',\n",
+    " 'Nano Lett.',\n",
+    " 'New Journal of Physics',\n",
+    " 'PHYSICAL REVIEW B',\n",
+    " 'Phil. Trans. R. Soc. A',\n",
+    " 'Phys. Rev. E - Rap. Comm.',\n",
+    " 'Phys. Rev. Lett.',\n",
+    " 'Sci. Model. Simul.',\n",
+    " 'Sol. St. Comm.',\n",
+    " 'Top. Catal.'}\n",
+    " ```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**3.4 Create a list named `pub_authors`...**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 908,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "pub_authors = re.findall('<BR>\\s*(.*),\\s*<I>', prof_pubs)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 909,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Ming-Wei Lin, Cheng Ling, Luis A. Agapito, Nicholas Kioussis, Yiyang Zhang, Mark Ming-Cheng Cheng\n",
+      "JAdam Gali, Efthimios Kaxiras, Gergely T. Zimanyi, Sheng Meng\n",
+      "Jan M. Knaup, Han Li, Joost J. Vlassak, and Efthimios Kaxiras\n",
+      "Martin Heiss, Sonia Conesa-Boj, Jun Ren, Hsiang-Han Tseng, Adam Gali\n",
+      "Simone Melchionna, Efthimios Kaxiras, Massimo Bernaschi and Sauro Succi\n",
+      "J R Maze, A Gali, E Togan, Y Chu, A Trifonov\n",
+      "Kejie Zhao, Wei L. Wang, John Gregoire, Matt Pharr, Zhigang Suo\n",
+      "Masataka Katono, Takeru Bessho, Sheng Meng, Robin Humphry-Baker, Guido Rothenberger\n",
+      "Thomas D. Kuhne, Tod A. Pascal, Efthimios Kaxiras, and Yousung Jung\n",
+      "Sheng Meng, Efthimios Kaxiras, Md. K. Nazeeruddin, and Michael Gratzel\n",
+      "Bingjun Xu, Jan Haubrich, Thomas A. Baker, Efthimios Kaxiras, and Cynthia M. Friend\n",
+      "Jun Ren, Sheng Meng, Yi-Lin Wang, Xu-Cun Ma, Qi-Kun Xue, Efthimios Kaxiras\n",
+      "Jan Haubrich, Efthimios Kaxiras, and Cynthia M. Friend\n",
+      "Thomas A. Baker, Bingjun Xu, Stephen C. Jensen, Cynthia M. Friend and Efthimios Kaxiras\n",
+      "Youdong Mao, Wei L. Wang, Dongguang Wei, Efthimios Kaxiras, and Joseph G. Sodroski\n",
+      "H. Li, J.M. Knaup, E. Kaxiras and J.J. Vlassak\n",
+      "W.L. Wang and E. Kaxiras\n",
+      "L.A. Agapito, N. Kioussis and E. Kaxiras\n",
+      "A. Peters, S. Melchionna, E. Kaxiras, J. Latt, J. Sircar, S. Succi\n",
+      "J. Ren, E. Kaxiras and S. Meng\n",
+      "T.A. Baker, E. Kaxiras and C.M. Friend\n",
+      "H.P. Chen, R.K. Kalia, E. Kaxiras, G. Lu, A. Nakano, K. Nomura\n",
+      "S. Meng and E. Kaxiras\n",
+      "C.L. Chang, S.K.R.S. Sankaranarayanan, D. Ruzmetov, M.H. Engelhard, E. Kaxiras and S. Ramanathan\n",
+      "T.A. Baker, C.M. Friend and E. Kaxiras\n",
+      "S. Melchionna, M. Bernaschi, S. Succi, E. Kaxiras, F.J. Rybicki, D. Mitsouras, A.U. Coskun and C.L. Feldman\n",
+      "M. Bernaschi, M. Fatica, S. Melchionna, S. Succi and E. Kaxiras\n",
+      "E. Manousakis, J. Ren, S. Meng and E. Kaxiras\n",
+      "A. Gali, E. Janzen, P. Deak, G. Kresse and E. Kaxiras\n",
+      "S.K.R.S. Sankaranarayanan, E. Kaxiras and S. Ramanathan\n",
+      "T.A. Baker, B.J. Xu, X.Y. Liu, E. Kaxiras and C.M. Friend\n",
+      "F.J. Rybicki, S. Melchionna, D. Mitsouras, A.U. Coskun, A.G. Whitmore, E. Kaxiras, S. Succi, P.H. Stone and C.L. Feldman\n",
+      "H. Chen, W.G. Zhu, E. Kaxiras, and Z.Y. Zhang\n",
+      "M. Fyta, S. Melchionna, M. Bernaschi, E. Kaxiras and S. Succi\n",
+      "E.M. Kotsalis, J.H. Walther, E. Kaxiras and P. Koumoutsakos\n",
+      "C.E. Lekka, J. Ren, S. Meng and E. Kaxiras\n",
+      "W.L. Wang, O.V. Yazyev, S. Meng and E. Kaxiras\n",
+      "A. Gali and E. Kaxiras\n",
+      "S. Melchionna, M. Bernaschi, M. Fyta, E. Kaxiras and S. Succi\n",
+      "S.K.R.S. Sankaranarayanan, E. Kaxiras, S. Ramanathan\n",
+      "T.A. Baker, C.M. Friend and E. Kaxiras\n",
+      "T.A. Baker, C.M. Friend and E. Kaxiras\n",
+      "E. Kaxiras and S. Succi\n",
+      "E. Manousakis, J. Ren, S. Meng and E. Kaxiras\n"
+     ]
+    }
+   ],
+   "source": [
+    "# check your code: print the list of strings containing the author(s)' names\n",
+    "for item in pub_authors:\n",
+    "    print (item)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Your output should look like this (a line for each paper's authors string of names)\n",
+    "```\n",
+    "Ming-Wei Lin, Cheng Ling, Luis A. Agapito, Nicholas Kioussis, Yiyang Zhang, Mark Ming-Cheng Cheng,\n",
+    "JAdam Gali, Efthimios Kaxiras, Gergely T. Zimanyi, Sheng Meng,\n",
+    "Jan M. Knaup, Han Li, Joost J. Vlassak, and Efthimios Kaxiras,\n",
+    "Martin Heiss, Sonia Conesa-Boj, Jun Ren, Hsiang-Han Tseng, Adam Gali,\n",
+    "\n",
+    "...\n",
+    "\n",
+    "T.A. Baker, C.M. Friend and E. Kaxiras,\n",
+    "T.A. Baker, C.M. Friend and E. Kaxiras,\n",
+    "E. Kaxiras and S. Succi,\n",
+    "E. Manousakis, J. Ren, S. Meng and E. Kaxiras,\n",
+    "```"
+   ]
+  }
+ ],
+ "metadata": {
+  "anaconda-cloud": {},
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.8"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

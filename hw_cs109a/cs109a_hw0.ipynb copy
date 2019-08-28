@@ -1,0 +1,2033 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "# <img style=\"float: left; padding-right: 10px; width: 45px\" src=\"iacs.png\"> CS109A Introduction to Data Science \n",
+    "\n",
+    "## Homework 0\n",
+    "\n",
+    "**Harvard University**<br/>\n",
+    "**Summer 2018**<br/>\n",
+    "**Instructors**: Pavlos Protopapas and Kevin Rader\n",
+    "\n",
+    "---\n",
+    "\n",
+    "This is a homework which you must turn in.\n",
+    "\n",
+    "This homework has the following intentions:\n",
+    "\n",
+    "1. To get you familiar with the jupyter/python environment.\n",
+    "2. You should easily understand these questions and what is being asked. If you struggle, this may not be the right class for you.\n",
+    "3. You should be able to understand the intent (if not the exact syntax) of the code and be able to look up on Google and provide code that is asked of you. If you cannot, this may not be the right class for you.\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 116,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style>\n",
+       "h1 { \n",
+       "    padding-top: 25px;\n",
+       "    padding-bottom: 25px;\n",
+       "    text-align: left; \n",
+       "    padding-left: 10px;\n",
+       "    background-color: #DDDDDD; \n",
+       "    color: black;\n",
+       "}\n",
+       "p.q1 { \n",
+       "    padding-top: 5px;\n",
+       "    padding-bottom: 5px;\n",
+       "    text-align: left; \n",
+       "    padding-left: 5px;\n",
+       "    background-color: #EEEEEE; \n",
+       "    color: black;\n",
+       "}\n",
+       "header {\n",
+       "   padding-top: 35px;\n",
+       "    padding-bottom: 35px;\n",
+       "    text-align: left; \n",
+       "    padding-left: 10px;\n",
+       "    background-color: #DDDDDD; \n",
+       "    color: black;\n",
+       "}\n",
+       "\n"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "execution_count": 116,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "## RUN THIS CELL TO GET THE RIGHT FORMATTING \n",
+    "from IPython.core.display import HTML\n",
+    "def css_styling():\n",
+    "    styles = open(\"cs109.css\", \"r\").read()\n",
+    "    return HTML(styles)\n",
+    "css_styling()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "<hr style='height:1px'>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "## Basic Math and Probability/Statistics Calculations"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "We'll start you off with some basic math and statistics problems questions to make sure you have the appropriate background to be comfortable with concepts that will come up in CS 109a."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "<div class=\"exercise\"><b> Question 1: Mathiness is What Brings Us Together Today </b></div>\n",
+    "\n",
+    "#### Matrix Operations\n",
+    "\n",
+    "*Complete the following matrix operations. **Note: Do not do this numerically and show your work as a markdown/latex** notebook cell*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**1.1.** &nbsp;&nbsp;Let &nbsp;&nbsp; $A =  \\left( \\begin{array}{ccc}\n",
+    "3 & 4 & 2 \\\\\n",
+    "5 & 6 & 4 \\\\\n",
+    "4 & 3 & 4 \\end{array} \\right) \\,\\,$ and  $\\,\\, B = \\left( \\begin{array}{ccc}\n",
+    "1 & 4 & 2 \\\\\n",
+    "1 & 9 & 3 \\\\\n",
+    "2 & 3 & 3 \\end{array} \\right)$.  \n",
+    "\n",
+    "Compute &nbsp;$A \\cdot B$.\n",
+    "\n",
+    "**1.2.** &nbsp;&nbsp;Let &nbsp;&nbsp;\n",
+    "$A =  \\left( \\begin{array}{ccc}\n",
+    "0 & 12 & 8 \\\\\n",
+    "1 & 15 & 0 \\\\\n",
+    "0 & 6 & 3 \\end{array} \\right)$.  \n",
+    "\n",
+    "Compute &nbsp; $A^{-1}$.  \n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**Calculus and Probability**\n",
+    "\n",
+    "*Complete the following (show your work as a markdown/latex notebook cell)*\n",
+    "\n",
+    "**1.3**. From Wikipedia:\n",
+    "\n",
+    "  > In mathematical optimization, statistics, econometrics, decision theory, machine learning and computational neuroscience, a loss function or cost function is a function that maps an event or values of one or more variables onto a real number intuitively representing some \"cost\" associated with the event. An optimization problem seeks to minimize a loss function.\n",
+    "  \n",
+    "   We've generated a cost function on parameters $x,y \\in \\mathcal{R}$  $L(x,y)= 3x^2y - y^3 - 3x^2 - 3y^2 + 2$.  Find the critical points (optima) of $L(x,y)$.\n",
+    "\n",
+    "\n",
+    "**1.4**. A central aspect of call center operations is the per minute statistics of caller demographics.  Because of the massive call volumes call centers achieve, these per minute statistics can often take on well-known distributions.  In the CS109 Homework Helpdesk, X and Y are discrete random variables with X measuring the number of female callers per minute and Y the total number of callers per minute.  We've determined historically the joint pmf of (X, Y) and found it to be $$p_{X,Y}(x,y) = e^{-4}\\frac{2^y}{x!(y-x)!}$$ where $y \\in \\mathbb{N}, x \\in [0, y]$ (That is to say the total number of callers in a minute is a non-negative integer and the number of female callers naturally assumes a value between 0 and the total number of callers inclusive).  Find the mean and variance of the marginal distribution of $X$. \n",
+    "\n",
+    "**Hints: **\n",
+    "  1. $x\\in \\left[0,y\\right] \\Rightarrow x < y$.\n",
+    "  2. You may find the change of variable $z = y-x$ helpful.\n",
+    "  3. Recall: $$\\sum_{z=0}^{\\infty}\\frac{2^{z}}{z!}  =e^{2}$$"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**Basic Statistics**\n",
+    "\n",
+    "*Complete the following: you can perform the calculations by hand (show your work) or using software (include the code and output...screenshots are fine if it is from another platform).*\n",
+    "\n",
+    "**1.5**. 37 of the 76 female CS concentrators have taken Data Science 1 (DS1) while 50 of the 133 male concentrators haven taken DS1.  Perform a statistical test to determine if interest in Data Science (by taking DS1) is related to sex.  Be sure to state your conclusion."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Answers"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**1.1**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "$B = (b_1, b_2, b_3)$ where $b_i$ is the $i$th collumn vector. \n",
+    "\n",
+    "$$Ab_1 =\\begin{pmatrix}\n",
+    "3 & 4 & 2 \\\\\n",
+    "5 & 6 & 4 \\\\\n",
+    "4 & 3 & 4\n",
+    "\\end{pmatrix} \\begin{pmatrix}\n",
+    "1 \\\\\n",
+    "1 \\\\\n",
+    "2\n",
+    "\\end{pmatrix} = (1)\\begin{pmatrix}\n",
+    "3 \\\\\n",
+    "5 \\\\\n",
+    "4\n",
+    "\\end{pmatrix} + (1)\\begin{pmatrix}\n",
+    "4 \\\\\n",
+    "6 \\\\\n",
+    "3\n",
+    "\\end{pmatrix} + (2)\\begin{pmatrix}\n",
+    "2 \\\\\n",
+    "4 \\\\\n",
+    "4\n",
+    "\\end{pmatrix}$$\n",
+    "\n",
+    "$$Ab_1= \\begin{pmatrix}\n",
+    "3 \\\\\n",
+    "5 \\\\\n",
+    "4\n",
+    "\\end{pmatrix} + \\begin{pmatrix}\n",
+    "4 \\\\\n",
+    "6 \\\\\n",
+    "3\n",
+    "\\end{pmatrix} + \\begin{pmatrix}\n",
+    "4 \\\\\n",
+    "8 \\\\\n",
+    "8\n",
+    "\\end{pmatrix} = \\begin{pmatrix}\n",
+    "3+4+4 \\\\\n",
+    "5+6+8 \\\\\n",
+    "4+3+8\n",
+    "\\end{pmatrix} = \\begin{pmatrix}\n",
+    "11 \\\\\n",
+    "19 \\\\\n",
+    "15\n",
+    "\\end{pmatrix}$$\n",
+    "\n",
+    "$$A b_2  = \\begin{pmatrix}\n",
+    "3 & 4 & 2 \\\\\n",
+    "5 & 6 & 4 \\\\\n",
+    "4 & 3 & 4\n",
+    "\\end{pmatrix} \\begin{pmatrix}\n",
+    "4 \\\\\n",
+    "9 \\\\\n",
+    "3\n",
+    "\\end{pmatrix} =\\begin{pmatrix}\n",
+    "54 \\\\\n",
+    "86 \\\\\n",
+    "55\n",
+    "\\end{pmatrix}$$\n",
+    "\n",
+    "$$Ab_3 =\\begin{pmatrix}\n",
+    "3 & 4 & 2 \\\\\n",
+    "5 & 6 & 4 \\\\\n",
+    "4 & 3 & 4\n",
+    "\\end{pmatrix}\\begin{pmatrix}\n",
+    "2 \\\\\n",
+    "3 \\\\\n",
+    "3\n",
+    "\\end{pmatrix} =\\begin{pmatrix}\n",
+    "    26 \\\\\n",
+    "    44 \\\\\n",
+    "    33\n",
+    "\\end{pmatrix}$$\n",
+    "\n",
+    "Thus, \n",
+    "\n",
+    "$$AB = (Ab_1, Ab_2, Ab_3) = \\begin{pmatrix} 11 & 54 & 26 \\\\\n",
+    "    19 & 86 & 44 \\\\\n",
+    "    15 & 55 & 33\n",
+    "\\end{pmatrix} $$"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**1.2**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$A^{-1} = \\displaystyle \\frac{1}{det(A)} \\begin{pmatrix}\n",
+    "det\\begin{pmatrix}\n",
+    "6 & 4 \\\\\n",
+    "3 & 4\n",
+    "\\end{pmatrix} & det\\begin{pmatrix}\n",
+    "2 & 4 \\\\\n",
+    "4 & 3\n",
+    "\\end{pmatrix} & det\\begin{pmatrix}\n",
+    "4& 2 \\\\\n",
+    "6& 4\n",
+    "\\end{pmatrix} \\\\\n",
+    "det\\begin{pmatrix}\n",
+    "4& 5 \\\\\n",
+    "4& 4\n",
+    "\\end{pmatrix} & det\\begin{pmatrix}\n",
+    "3 & 2 \\\\\n",
+    "4 & 4\n",
+    "\\end{pmatrix} & det\\begin{pmatrix}\n",
+    "2 & 3 \\\\\n",
+    "4 & 5\n",
+    "\\end{pmatrix} \\\\ \n",
+    "det\\begin{pmatrix}\n",
+    "5 &   6 \\\\\n",
+    "4 &   3\n",
+    "\\end{pmatrix} & det\\begin{pmatrix}\n",
+    "4 &   3 \\\\\n",
+    "3 &   4\n",
+    "\\end{pmatrix} & det\\begin{pmatrix}\n",
+    "     3   &  4 \\\\\n",
+    "     5   &  6 \\\\\n",
+    "\\end{pmatrix} \n",
+    "\\end{pmatrix} = \\frac{1}{2} \\begin{pmatrix}\n",
+    "12 & -10 & 4 \\\\\n",
+    "-3 & 4 & -2 \\\\\n",
+    "9 & 7 & -2\n",
+    "\\end{pmatrix} = \\begin{pmatrix}\n",
+    "6 & -5 & 2 \\\\\n",
+    "-\\frac{3}{2} & 2 & -1 \\\\\n",
+    "-\\frac{9}{2} & -\\frac{7}{2} & -1\n",
+    "\\end{pmatrix}$$\n",
+    "\n",
+    "$$A^{-1} = \\begin{pmatrix}\n",
+    "6 & -5 & 2 \\\\\n",
+    "-\\frac{3}{2} & 2 & -1 \\\\\n",
+    "-\\frac{9}{2} & -\\frac{7}{2} & -1\n",
+    "\\end{pmatrix}$$"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**1.3**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "A point $(x,y)$ is a critical point of the loss function $L(x,y)$ if $\\nabla L(x,y) = 0$.\n",
+    "\n",
+    "+  $L_x = 6xy - 6x = 6x(y-1)$ \n",
+    "\n",
+    "    $\\rightarrow L_x = 0$ when $x=0$ or when $y=1$\n",
+    "\n",
+    "\n",
+    "+ $L_y = 3x^2 - 3y^2 - 6y = 3x^2 - 3y(y+2)$\n",
+    "\n",
+    "    $\\rightarrow L_y = 0$ when $x^2 = y(y+2)$\n",
+    "\n",
+    "Find the critical points:\n",
+    "\n",
+    "+ When $x=0$, $L_x=0$. Find $y$ by setting $L_y=0$ with $x=0$:\n",
+    "\n",
+    "    $\\rightarrow x^2 = y(y+2)$\n",
+    "    \n",
+    "    $\\rightarrow 0 = y(y+2)$\n",
+    "    \n",
+    "    $\\rightarrow$ Thus, $y=0$ or $y=-2$. \n",
+    "    \n",
+    "    $\\rightarrow$ Critical points: $(0,0); (0,-2)$\n",
+    "    \n",
+    "    \n",
+    "+ When $y=1$, $L_x=0$. Find $x$ by setting $L_y=0$ with $y=1$:\n",
+    "    $\\rightarrow x^2 = y(y+2)$\n",
+    "    \n",
+    "    $\\rightarrow x^2 = 1(1+2) = 3$\n",
+    "    \n",
+    "    $\\rightarrow$ Thus, $x=\\sqrt{3}$ or $x=-\\sqrt{3}$. \n",
+    "    \n",
+    "    $\\rightarrow$ Critical points: $(\\sqrt{3},1); (-\\sqrt{3},1)$\n",
+    "    \n",
+    "    \n",
+    "The critical points of $L(x,y)$ are $(0,0); (0,-2); (\\sqrt{3},1); (-\\sqrt{3},1)$\n",
+    "    \n",
+    "\n",
+    "\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**1.4** "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$p_{X,Y}(x,y) = e^{-4}\\frac{2^y}{x!(y-x)!}$$\n",
+    "\n",
+    "$$p_{X}(x) = \\displaystyle \\sum^{\\infty}_{y=0}e^{-4}\\frac{2^y}{x!(y-x)!} = \\frac{e^{-4}}{x!} \\sum^{\\infty}_{y=0}\\frac{2^y}{(y-x)!} $$\n",
+    "\n",
+    "Set $z = y-x$, meaning z is the number of males. \n",
+    "\n",
+    "$$p_{X}(x)= \\displaystyle \\frac{e^{-4}}{x!} \\sum^{\\infty}_{z=0}\\frac{2^{z+x}}{z!} =  = \\frac{e^{-4}}{x!} \\sum^{\\infty}_{z=0}\\frac{2^z 2^x}{z!} = \\frac{e^{-4} 2^{x}}{x!} \\sum^{\\infty}_{z=0}\\frac{2^z}{z!}= \\frac{e^{-4} 2^{x}}{x!} e^2 = \\frac{e^{-2} 2^{x}}{x!}$$\n",
+    "\n",
+    "$$E(X) = \\displaystyle \\sum^{\\infty}_{x=0} xp_{X}(x) = \\sum^{\\infty}_{x=0} x \\frac{e^{-2} 2^{x}}{x!} = \\sum^{\\infty}_{x=1} x \\frac{e^{-2} 2^{x}}{x!}  =  \\sum^{\\infty}_{x=1}\\frac{e^{-2} 2^{x}}{(x-1)!} = \\sum^{\\infty}_{x=1}\\frac{e^{-2} (2)2^{x-1}}{(x-1)!} = 2e^{-2} \\sum^{\\infty}_{x=1}\\frac{2^{x-1}}{(x-1)!} $$\n",
+    "\n",
+    "Set $w=x-1$. \n",
+    "\n",
+    "$$E(X) = \\displaystyle 2e^{-2} \\sum^{\\infty}_{x=1}\\frac{2^{x-1}}{(x-1)!} = 2e^{-2} \\sum^{\\infty}_{w=0}\\frac{2^{w}}{w!} = 2e^{-2} e^2 = 2$$\n",
+    "\n",
+    "$$Var(X) = E(X^2) - E(X)^2 = E(X^2) - 4 $$\n",
+    "\n",
+    "$$E(X^2) = \\displaystyle \\sum^{\\infty}_{x=0} x^2p_{X}(x) \\sum^{\\infty}_{x=0} x^2 \\frac{e^{-2} 2^{x}}{x!} = \\sum^{\\infty}_{x=1} x^2 \\frac{e^{-2} 2^{x}}{x!}  =  \\sum^{\\infty}_{x=1}\\frac{xe^{-2} 2^{x}}{(x-1)!} = \\sum^{\\infty}_{x=1}\\frac{xe^{-2} (2)2^{x-1}}{(x-1)!} = 2e^{-2} \\sum^{\\infty}_{x=1}\\frac{x2^{x-1}}{(x-1)!} = 2e^{-2}(3e^2) = 6$$\n",
+    "\n",
+    "$$Var(X) = E(X^2) - 4 = 6 - 4 = 2$$\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**1.5** "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This is an example of difference between two proportions test. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 117,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "import math"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 118,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[-0.028398099210952932, 0.2502026104891485]\n"
+     ]
+    }
+   ],
+   "source": [
+    "prop_f = 37/76\n",
+    "prop_m = 50/133\n",
+    "se = math.sqrt( ((prop_f*(1-prop_f))/76) + ((prop_m*(1-prop_m))/133) )\n",
+    "z = 1.96\n",
+    "diff = prop_f - prop_m\n",
+    "upper = diff + z*se\n",
+    "lower = diff - z*se\n",
+    "print([lower, upper])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We see from above that 0 is contained within the 95% confidnece interval for the difference of proportions between the genders. Thus, in performing a hypothesis test, we do not have sufficient evvidence that the difference in proportions is significatnt. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "<hr style='height:1px'>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 119,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "## RUN THIS CELL \n",
+    "# The line %... is a jupyter \"magic\" command, and is not part of the Python language.\n",
+    "# In this case we're just telling the plotting library to draw things on\n",
+    "# the notebook, instead of on a separate window.\n",
+    "%matplotlib inline\n",
+    "# See the \"import ... as ...\" contructs below? They're just aliasing the package names.\n",
+    "# That way we can call methods like plt.plot() instead of matplotlib.pyplot.plot().\n",
+    "import numpy as np\n",
+    "import scipy as sp\n",
+    "import scipy.stats\n",
+    "import matplotlib.pyplot as plt"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "## Simulation of a Coin Throw\n",
+    "\n",
+    "We'd like to do some experiments with coin flips, but we don't have a physical coin at the moment. So let's **simulate** the process of flipping a coin on a computer. To do this we will use a form of the **random number generator** built into `numpy`. In particular, we will use the function `np.random.choice` which picks items with uniform probability from a list. If we provide it a list ['H', 'T'], it will pick one of the two items in the list. We can also ask it to do this multiple times by specifying the parameter `size`. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 120,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "def throw_a_coin(n_trials):\n",
+    "    return np.random.choice(['H','T'], size=n_trials)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "`np.sum` is a function that returns the sum of items in an iterable (i.e. a list or an array).  Because python coerces `True` to 1 and `False` to 0, the effect of calling `np.sum` on the array of `True`s and `False`s will be to return the number of of `True`s in the array (which can then effectively count the number of heads)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "<div class=\"exercise\"><b> Question 2: The 12 Labors of Bernoullis </b></div>\n",
+    "\n",
+    "Now that we know how to run our coin flip experiment, we're interested in knowing what happens as we choose larger and larger number of coin flips.\n",
+    "\n",
+    "\n",
+    "**2.1**.  Run one experiment of flipping a coin 40 times storing the resulting sample in the variable `throws1`.   What's the total proportion of heads?\n",
+    "\n",
+    "**2.2**.  **Replicate** the experiment in 2.1 storing the resulting sample  in the variable `throws2`.   What's the proportion of heads?  How does this result compare to that you obtained in question 2.1?\n",
+    "\n",
+    "**2.3**.  Write a function  called `run_trials` that takes as input a list, called `n_flips`, of integers representing different values for the number of coin flips in a trial.  For each element in the input list, `run_trials` should run the coin flip experiment with that number of flips and calculate the proportion of heads.  The output of `run_trials` should be the list of calculated proportions.  Store the output of calling `run_trials` in a list called `proportions`.\n",
+    "\n",
+    "**2.4**.  Using the results in 2.3, reproduce the plot below. \n",
+    "<!--of the proportion of observed heads to total coins flipped in the trial when `run_trials` is run for each of the sample sizes in `trials` -->  <img src=\"./figs/HW0Plot1.png\"/>\n",
+    "\n",
+    "**2.5**.  What's the appropriate observation about the result of running the coin flip experiment with larger and larger numbers of coin flips?  Choose the appropriate one from the choices below and explain why. \n",
+    "\n",
+    "> A. Regardless of sample size the probability of in our experiment of observing heads is 0.5 so the proportion of heads observed in the coin-flip experiments will always be 0.5.  \n",
+    ">\n",
+    "> B. The proportions **fluctuate** about their long-run value of 0.5 (what you might expect if you tossed the coin an infinite amount of times), in accordance with the notion of a fair coin (which we encoded in our simulation by having `np.random.choice` choose between two possibilities with equal probability), with the fluctuations seeming to become much smaller as the number of trials increases.\n",
+    ">\n",
+    "> C. The proportions **fluctuate** about their long-run value of 0.5 (what you might expect if you tossed the coin an infinite amount of times), in accordance with the notion of a fair coin (which we encoded in our simulation by having `np.random.choice` choose between two possibilities with equal probability), with the fluctuations constant regardless of the number of trials.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "#### Answers"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**2.1**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 121,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['H' 'H' 'H' 'T' 'H' 'H' 'T' 'T' 'H' 'T' 'H' 'T' 'H' 'T' 'T' 'H' 'T' 'T'\n",
+      " 'T' 'T' 'H' 'H' 'H' 'H' 'T' 'T' 'T' 'H' 'H' 'H' 'T' 'H' 'T' 'T' 'T' 'T'\n",
+      " 'H' 'H' 'H' 'T']\n",
+      "The number of heads is 20\n",
+      "The proportion of heads is 0.5\n"
+     ]
+    }
+   ],
+   "source": [
+    "throws1 = throw_a_coin(40)\n",
+    "print(throws1)\n",
+    "n_heads1 = np.count_nonzero(throws1 == \"H\")\n",
+    "print(f\"The number of heads is {n_heads1}\")\n",
+    "prop_heads1 = n_heads1/throws1.shape[0]\n",
+    "print(f\"The proportion of heads is {prop_heads1}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**2.2** "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 122,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['T' 'H' 'H' 'H' 'H' 'T' 'H' 'H' 'T' 'H' 'H' 'H' 'H' 'T' 'H' 'H' 'H' 'H'\n",
+      " 'H' 'T' 'H' 'T' 'H' 'H' 'T' 'T' 'H' 'T' 'H' 'H' 'H' 'H' 'T' 'T' 'H' 'H'\n",
+      " 'T' 'T' 'T' 'T']\n",
+      "The number of heads is 25\n",
+      "The proportion of heads is 0.625\n"
+     ]
+    }
+   ],
+   "source": [
+    "throws2 = throw_a_coin(40)\n",
+    "print(throws2)\n",
+    "n_heads2 = np.count_nonzero(throws2 == \"H\")\n",
+    "print(f\"The number of heads is {n_heads2}\")\n",
+    "prop_heads2 = n_heads2/throws2.shape[0]\n",
+    "print(f\"The proportion of heads is {prop_heads2}\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 123,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The difference in proportion of heads in the first eperiment from the second is 0.125\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(f\"The difference in proportion of heads in the first eperiment from the second is {prop_heads2-prop_heads1}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**2.3** "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 124,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "n_flips = [10, 30, 50, 70, 100, 130, 170, 200, 500, 1000, 2000, 5000, 10000]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 125,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "def prop_heads(n):\n",
+    "    arr = throw_a_coin(n)\n",
+    "    n_heads = np.count_nonzero(arr == \"H\")\n",
+    "    prop_heads = n_heads/arr.shape[0]\n",
+    "    return(prop_heads)\n",
+    "\n",
+    "def run_trials(arr):\n",
+    "    l = len(arr)\n",
+    "    out = [-1]*l\n",
+    "    for i, ele in enumerate(arr):\n",
+    "        out[i] = prop_heads(ele)\n",
+    "    return(out)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 126,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "proportions = run_trials(n_flips)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**2.4** "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 127,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<matplotlib.lines.Line2D at 0x1119ef1d0>"
+      ]
+     },
+     "execution_count": 127,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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\nH/7frWS7z5xoAAAAAElFTkSuQmCC\n",
+      "text/plain": [
+       "<matplotlib.figure.Figure at 0x111852b38>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "plt.xlabel(\"number of flips\")\n",
+    "plt.ylabel(\"proportion of heads from simulation\")\n",
+    "plt.ylim = [0,1]\n",
+    "plt.plot(n_flips, proportions, marker = 'o')\n",
+    "plt.axhline(0.5, color = 'r')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**2.5** "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "*What's the appropriate observation about the result of applying the coin flip experiment to larger and larger numbers of coin flips?  Choose the appropriate one.*\n",
+    "\n",
+    "B\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "<hr style='height:1px'>\n",
+    "## Multiple Replications of the Coin Flip Experiment\n",
+    "\n",
+    "The coin flip experiment that we did above gave us some insight, but we don't have a good notion of how robust our results are under repetition as we've only run one experiment for each number of coin flips. Lets redo the coin flip experiment, but let's incorporate multiple repetitions of each number of coin flips. For each choice of the number of flips,  $n$, in an experiment, we'll do $M$ replications of the coin tossing experiment."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    " <div class='exercise'> <b> Question 3. So Many Replications </b></div>\n",
+    "\n",
+    "**3.1**.  Write a function `make_throws` which takes as arguments the `n_replications` ($M$) and the `n_flips` ($n$), and returns a list (of size $M$) of proportions, with each proportion calculated by taking the ratio of heads to to total number of coin flips in each replication of $n$ coin tosses.  `n_flips` should be a python parameter whose value should default to 20 if unspecified when `make_throws` is called. \n",
+    "\n",
+    "**3.2**.  Create the variables `proportions_at_n_flips_100` and `proportions_at_n_flips_1000`.  Store in these variables the result of `make_throws` for `n_flips` equal to 100 and 1000 respectively while keeping `n_replications` at 200.  Create a plot with the histograms of `proportions_at_n_flips_100` and `proportions_at_n_flips_1000`.  Make sure to title your plot, label the x-axis and provide a legend.(See below for an example of what the plot may look like) ![](./figs/HW0Plot2.png) \n",
+    "\n",
+    "**3.3**. Calculate the mean and variance of the results in the each of the variables `proportions_at_n_flips_100` and `proportions_at_n_flips_1000` generated in 3.2.\n",
+    "\n",
+    "**3.4**. Based upon the plots what would be your guess of what type of distribution is represented by histograms in 3.2?  Explain the factors that influenced your choice.\n",
+    "> A. Gamma Distribution\n",
+    ">\n",
+    "> B. Beta Distribution\n",
+    ">\n",
+    "> C. Gaussian\n",
+    "\n",
+    "**3.5**. Let's just assume for arguments sake that the answer to 3.4 is **C. Gaussian**.  Plot a **normed histogram** of your results `proportions_at_n_flips_1000` overlayed with your selection for the appropriate gaussian distribution to represent the experiment of flipping a coin 1000 times.   (**Hint:  What parameters should you use for your Gaussian?**)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**3.1**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 128,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "def make_throws(n, M = None):\n",
+    "    if M == None:\n",
+    "        M = 20\n",
+    "    out = [-1]*M\n",
+    "    for i in range(M):\n",
+    "        out[i] = prop_heads(n)\n",
+    "    return(out)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**3.2**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 129,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "n_replications = 200\n",
+    "proportions_at_n_flips_100 = make_throws(100, n_replications)\n",
+    "proportions_at_n_flips_1000 = make_throws(1000, n_replications)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 130,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<matplotlib.legend.Legend at 0x111adca58>"
+      ]
+     },
+     "execution_count": 130,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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\n+F0q26EU4QdctEdqFb9C1i3xfGfH01Up+8XubRExrLWyZl2RpNlk+/BNnR1LKdtSC71qJH1WUr/U\nH/wfwNNkl62ZmXUaJ/S2GU/WbbAKGEXWfeNDHTPrVO5yMTPLCbfQzcxyokNvHDVw4MAYMWJER67S\nzKzbmz9//kvpx38t6tCEPmLECObNm9eRqzQz6/YkLW+9lLtczMxywwndzCwnnNDNzHKis5+mY2ZW\n1Ntvv01DQwNvvvlmZ4fSYfr06cOwYcPo3bttN2p0QjezLqmhoYEddtiBESNGIFXr5qRdV0Swbt06\nGhoaGDmybY/1dZeLmXVJb775JgMGDNgmkjmAJAYMGNCuIxIndDPrsraVZN6kvdvrhG5mlhNO6GbW\nrV100UU8+OCDTJ8+nauuuqqieRsbGznkkEM48MADefjhh7eYNnbsWD70oQ8xZswYxowZw1133QXA\n9ttnT9lbtWoVJ5xwQnU2okp8UtQMuOPxFQDsuaLYA5SKe3Z4uQ8UatkphwyvynK2VY8//jiXXXYZ\nF198ccUJdtasWey3337cdFPxW5zffvvt1NXVFZ222267bU7yXYVb6GbWLZ1//vnsv//+PPHEE3zs\nYx/jpptu4pxzzuHKK7d+/vWyZcs48sgj2X///Rk3bhwrVqygvr6eCy64gBkzZjBmzBg2btxYZC2l\nLVu2jH33zR6/O3nyZMaPH8/YsWMZNWoUV1xxBQCvv/46xx13HAcccAD77rsvP/95NR9WtjW30M2s\nW7rmmmuYMGECt956K9deey1jx47l0UcfLVr23HPPZeLEiUycOJFbbrmFr3zlK0yfPp0rr7ySefPm\ncf311xed79RTT6Vv375A1pofMKD58+DfM3fuXBYuXEi/fv046KCDOO6441i+fDm77bYbv/71rwF4\n9dVX27nVLXML3cy6rQULFnDAAQewZMkSPvKRj5QsN2fOHE455RQATj/9dB555JGyln/77bdTX19P\nfX19i8kc4FOf+hQDBgygb9++fP7zn+eRRx5hv/32Y+bMmXz961/n4YcfZqedKnlsauXcQjezbqe+\nvp5JkybR0NDAwIEDeeONN4gIxowZw5w5cza3qjtS80sOJbH33nuzYMECfvOb33DppZcybtw4Lrvs\nsprF4Ba6mXU7Y8aMob6+nr333ptnnnmGI488kgceeID6+vqiyfywww5j6tSpQNbqPuKII6oe08yZ\n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\n",
+      "text/plain": [
+       "<matplotlib.figure.Figure at 0x1119a1e10>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "plt.title(\"Histogram of Sample at Different Number of Flips\")\n",
+    "plt.xlabel(\"mean proportion of heads\")\n",
+    "plt.hist(proportions_at_n_flips_100, alpha = 0.4, label = \"100\")\n",
+    "plt.hist(proportions_at_n_flips_1000, alpha = 0.4, label = \"1000\")\n",
+    "plt.legend(title=\"# of Flips\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**3.3**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 131,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    },
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The mean of the 100 flips is 0.50315\n",
+      "The mean of the 1000 flips is 0.49927\n",
+      "The variance of the 100 flips is 0.0024305775000000003\n",
+      "The variance of the 1000 flips is 0.0002535471000000003\n"
+     ]
+    }
+   ],
+   "source": [
+    "n_flips_100_mean = np.mean(proportions_at_n_flips_100)\n",
+    "print(f\"The mean of the 100 flips is {n_flips_100_mean}\")\n",
+    "n_flips_1000_mean = np.mean(proportions_at_n_flips_1000)\n",
+    "print(f\"The mean of the 1000 flips is {n_flips_1000_mean}\")\n",
+    "\n",
+    "n_flips_100_var = np.var(proportions_at_n_flips_100)\n",
+    "print(f\"The variance of the 100 flips is {n_flips_100_var}\")\n",
+    "n_flips_1000_var = np.var(proportions_at_n_flips_1000)\n",
+    "print(f\"The variance of the 1000 flips is {n_flips_1000_var}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**3.4**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "The type of distribution represented by the histrograms in 3.2 is Gaussian. The historgrams appear to be symmetric and have a bell-shaped curve similar to a Gaussian distriubtion.\n",
+    "\n",
+    "More precisily, the number of heads in the two distributions `proportions_at_n_flips_100` and `proportions_at_n_flips_100` flips is exactly Binomial(n,p) with parameter $p=0.5$ and for both and parameters $n=100$ and $n=1000$, repsecively. \n",
+    "\n",
+    "Importantly, however, the Binomial distribution can be approzimated by the Normal distribution when $n$ is large and $p$ is close to 0.5. Both these conditions are met in the distributions, hence why their histograms look normal. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**3.5**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We know that we can approximate the random variable $X$ which follows a Binomial(n,p) distribution and which counts the number of successes with a Normal/Gaussian distribution with mean $np$ and variance $np(1-p)$. Since our random variable of interest, however, is proportion and not counts, we divide the mean and variance by a factor of $n$, giving the mean as $p$ and variance as $\\displaystyle \\frac{p(1-p)}{n}$."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 132,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[<matplotlib.lines.Line2D at 0x111b0fdd8>]"
+      ]
+     },
+     "execution_count": 132,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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\nUCRdpZ+8FAAAAABJRU5ErkJggg==\n",
+      "text/plain": [
+       "<matplotlib.figure.Figure at 0x111b0f780>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "from scipy.stats import norm\n",
+    "p = 0.5\n",
+    "n = 1000\n",
+    "varr = p*(1-p)/n\n",
+    "sigma = np.sqrt(varr)\n",
+    "x = np.linspace(p - 3*sigma, p + 3*sigma, 100)\n",
+    "plt.hist(proportions_at_n_flips_1000, alpha = 0.4, normed=True)\n",
+    "plt.plot(x,norm.pdf(x,p,sigma))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "<div class='exercise'><b> Question 4: My Normal Binomial </b></div>\n",
+    "\n",
+    "Let's use our coin-flipping machinery to do some experimentation with the binomial distribution.  The binomial distribution, often represented by  $k \\sim Binomial(n, p)$ is often discribed the number of successes in `n` Bernoulli trials with each trial having a probability of success `p`.  In other words,  if you flip a coin `n` times, and each coin-flip has a probability `p` of landing heads, then the number of heads you observe is a sample from a binomial distribution.\n",
+    "\n",
+    "**4.1**. Sample the binomial distribution with $p = 0.5$ using coin flips by writing a function `sample_binomial1` which takes in integer parameters `n` and `size`.  The output of `sample_binomial1` should be a list of length `size` observations with each observation being the outcome of flipping a coin `n` times and counting the number of heads.  By default `size` should be 1.  Your code should take advantage of the `throw_a_coin` function we defined above. \n",
+    "\n",
+    "**4.2**. Sample the binomial distribution directly using scipy.stats.binom.rvs by writing another function `sample_binomial2` that takes in integer parameters `n` and `size` as well as a float `p` parameter `p` where $p \\in [0 \\ldots 1]$.  The output of `sample_binomial2` should be a list of length `size` observations with each observation a sample of $Binomial(n, p)$ (taking advantage of scipy.stats.binom).  By default `size` should be 1 and `p` should be 0.5.\n",
+    "\n",
+    "**4.3**. Run sample_binomial1 with 25 and 200 as values of the `n` and `size` parameters respectively and store the result in `binomial_trials1`. Run sample_binomial2 with 25, 200 and 0.5 as values of the `n`, `size` and `p` parameters respectively and store the results in `binomial_trials2`.  Plot normed histograms of `binomial_trials1` and `binomial_trials2`.  On both histograms, overlay a plot of the pdf of $Binomial(n=25, p=0.5)$\n",
+    "\n",
+    "**4.4**. How do the plots in 4.3 compare?\n",
+    "\n",
+    "**4.5**. Find the mean and variance of `binomial_trials1`.  How do they compare to the true mean and varaince of a $Binomial(n=25, p=0.5)$ distribution?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "#### Answers"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**4.1**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 133,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "def sample_binomial(n,size = None):\n",
+    "    if size == None:\n",
+    "        size = 1\n",
+    "    out = [-1]*size\n",
+    "    for i in range(size):\n",
+    "        out[i] = np.count_nonzero(throw_a_coin(n) == \"H\")\n",
+    "    return(out)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**4.2**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 134,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "from scipy.stats import binom\n",
+    "\n",
+    "def sample_binomial2(size, n=None,p=None):\n",
+    "    if n == None:\n",
+    "        n = 1\n",
+    "    if p == None:\n",
+    "        p = 0.5\n",
+    "    out = binom.rvs(size = size, n=n, p=p)\n",
+    "    return(out)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**4.3**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 135,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([  0.,   1.,   2.,   3.,   4.,   5.,   6.,   7.,   8.,   9.,  10.,\n",
+       "        11.,  12.,  13.,  14.,  15.,  16.,  17.,  18.,  19.,  20.,  21.,\n",
+       "        22.,  23.,  24.,  25.])"
+      ]
+     },
+     "execution_count": 135,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "np.linspace(0,25, 25+1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 136,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<matplotlib.legend.Legend at 0x111cc5fd0>"
+      ]
+     },
+     "execution_count": 136,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<matplotlib.figure.Figure at 0x111b80860>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "image/png": "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\nitr/LV1G2tloPX7lWrQev1Jaj18ppVTDaD1+pVSzysnJqXMK5b/+9S+b7w+s7EsTv1JNYIypNYtG\nXSkiIqLOuf+qcewxPK9DPUo1kr+/Pzk5OXb5Q1TKFsYYcnJy8Pf3b9J+tMevVCNFR0eTnp6OlhhR\nLcnf35/o6KaVQ9PEr1Qj+fj41HmVqVLOTod6lFLKw2jiV0opD6OJXymlPIwmfqWU8jCa+JVSysNo\n4ldKKQ+jiV8ppTyMJn6llPIwmviVUsrDaOJXSikPo4lfKaU8jCZ+pZTyMJr4lVLKw2jiV0opD6OJ\nXymlPIwmfqWU8jCa+JVSysNo4ldKKQ+jiV8ppTyMJn6llPIwmviVUsrD2JT4RWSciBwVkWQReaqO\n9dNEZL+IHBCRr0Wkv61tlVJKtax6E7+IWIDXgfFAb2CqiPSusdkJ4GZjTBzwe2BZA9oqpZRqQbb0\n+IcAycaY48aYYuBtYFL1DYwxXxtjcq1PvwGibW2rlFKqZdmS+KOAtGrP063LrmYO8M9GtlVKKdXM\nvO25MxEZRUXiH96ItvOAeQCdO3e2Z1hKKaWqsaXHnwF0qvY82rrsCiLSD1gBTDLG5DSkLYAxZpkx\nJsEYkxAZGWlL7EoppRrBlsS/C+ghIl1FxBe4F9hQfQMR6Qy8D0w3xhxrSFullFItq96hHmNMqYgs\nAD4FLMBKY8xBEXnQun4p8CwQAbwhIgCl1t57nW2b6VyUUkrZwKYxfmPMJmBTjWVLqz2eC8y1ta1S\nSinH0St3lVLKw2jiV0opD6OJXymlPIwmfqWU8jCa+JVSysNo4ldKKQ+jiV8ppTyMJn6llPIwmviV\nUsrDaOJXSikPo4lfKaU8jCZ+pZTyMJr4lVLKw2jiV0opD6OJXymlPIwmfqWU8jCa+JVSysNo4ldK\nKQ+jiV8ppTyMJn6llPIwmviVUsrDaOJXSikPo4lfKaU8jCZ+pZTyMJr4lVLKw2jiV0opD6OJXyml\nPIwmfqWU8jDejg5AKWezPTmbPSdzG9RmSNcIhnQNb6aIlLIvmxK/iIwDXgUswApjzEs11vcEVgED\ngV8bYxZVW5cCFABlQKkxJsE+oStlf0mpucxYuZOyctOgdr4WL/7x0DB6dwxppsiUsp96E7+IWIDX\ngTFAOrBLRDYYYw5V2+wc8Agw+Sq7GWWMyW5qsEo1p7xLJTyyfg8dQ/35aMFwgvxs+0CcW1jMHUu2\n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\nxK+UUh7m/wPVT2JQxLtFgwAAAABJRU5ErkJggg==\n",
+      "text/plain": [
+       "<matplotlib.figure.Figure at 0x11186ddd8>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "binomial_trials1 = sample_binomial(size = 200, n = 25)\n",
+    "binomial_trials2 = sample_binomial2(size = 200, n = 25, p = 0.5)\n",
+    "\n",
+    "p = 0.5\n",
+    "n = 25\n",
+    "varr = n*p*(1-p)\n",
+    "sigma = np.sqrt(varr)\n",
+    "x = np.linspace(0,25, 25+1)\n",
+    "binom_pmf = binom.pmf(x,n,p)\n",
+    "\n",
+    "plt.figure(0)\n",
+    "plt.plot(x, binom_pmf, label=\"Binom(n=25,p=0.5) pmf\")\n",
+    "plt.hist(binomial_trials1, alpha = 0.4, label = \"binomial_trials1\", normed=True)\n",
+    "plt.legend()\n",
+    "\n",
+    "plt.figure(1)\n",
+    "plt.plot(x, binom_pmf, label=\"Binom(n=25,p=0.5) pmf\")\n",
+    "plt.hist(binomial_trials2, alpha = 0.5, label = \"binomial_trials2\", normed=True)\n",
+    "plt.legend()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**4.4**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "The two plots look very similar as they assentially are derived from two identical processes. \n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**4.5**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "The true mean of a Binom(n=25,p=0.5) is $np=12.5$; the true variance is $np(1-p)=6.25$. Let's calculate the mean and varaince of `binomial_trials1`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 137,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The mean of binomial_trials1 is 12.6\n",
+      "The variance of binomial_trials1 is 6.54\n",
+      "The true mean and variance are close to the mean and varaince of binomial_trials.\n",
+      "The means differ by 0.09999999999999964\n",
+      "The variances differ by 0.29000000000000004\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(f\"The mean of binomial_trials1 is {np.mean(binomial_trials1)}\")\n",
+    "print(f\"The variance of binomial_trials1 is {np.var(binomial_trials1)}\")\n",
+    "print(f\"The true mean and variance are close to the mean and varaince of binomial_trials.\")\n",
+    "print(f\"The means differ by {abs(n*p-np.mean(binomial_trials1))}\")\n",
+    "print(f\"The variances differ by {abs(n*p*(1-p) - np.var(binomial_trials1))}\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "The true mean and variance are close to the mean and varaince of `binomial_trials`.\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "<hr style='height:1px'>\n",
+    "## Testing Your Python Code"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "In the following section we're going to do a brief introduction to unit testing.  We do so not only because unit testing has become an increasingly important part of of the methodology of good software practices, but also because we plan on using unit tests as part of our own CS109 grading practices as a way of increasing rigor and repeatability decreasing complexity and manual workload in our evaluations of your code.  We'll provide an example unit test at the end of this section.\n",
+    "\n",
+    "### Introduction to unit testing "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 138,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import ipytest"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "***Unit testing*** is one of the most important software testing methodologies.  Wikipedia describes unit testing as \"a software testing method by which individual units of source code, sets of one or more computer program modules together with associated control data, usage procedures, and operating procedures, are tested to determine whether they are fit for use.\"\n",
+    "\n",
+    "There are many different python libraries that support software testing in general and unit testing in particular.  PyTest is one of the most widely used and well-liked libraries for this purpose.  We've chosen to adopt PyTest (and ipytest which allows pytest to be used in ipython notebooks) for our testing needs and we'll do a very brief introduction to Pytest here so that you can become familiar with it too. \n",
+    "\n",
+    "If you recall the function that we provided you above `throw_a_coin`, which we'll reproduce here for convenience, it took a number and returned that many \"coin tosses\".  We'll start by seeing what happens when we give it different sizes of $N$.  If we give $N=0$, we should get an empty array of \"experiments\"."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 139,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "def throw_a_coin(N):\n",
+    "    return np.random.choice(['H','T'], size=N)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 140,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([], \n",
+       "      dtype='<U1')"
+      ]
+     },
+     "execution_count": 140,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "throw_a_coin(0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "Great!  If we give it positive values of $N$ we should get that number of 'H's and 'T's."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 141,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['H', 'T', 'T', 'H', 'T'], \n",
+       "      dtype='<U1')"
+      ]
+     },
+     "execution_count": 141,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "throw_a_coin(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 142,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['T', 'T', 'T', 'T', 'T', 'T', 'T', 'T'], \n",
+       "      dtype='<U1')"
+      ]
+     },
+     "execution_count": 142,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "throw_a_coin(8)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "Exactly what we expected!  \n",
+    "\n",
+    "What happens if the input isn't a positive integer though?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 143,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [
+    {
+     "ename": "TypeError",
+     "evalue": "'float' object cannot be interpreted as an integer",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mTypeError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-143-0a0318674769>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m()\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mthrow_a_coin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m4.5\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m<ipython-input-139-54a1ec744eb3>\u001b[0m in \u001b[0;36mthrow_a_coin\u001b[0;34m(N)\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;32mdef\u001b[0m \u001b[0mthrow_a_coin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mN\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m     \u001b[0;32mreturn\u001b[0m \u001b[0mnp\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mrandom\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mchoice\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'H'\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m'T'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0msize\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mN\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32mmtrand.pyx\u001b[0m in \u001b[0;36mmtrand.RandomState.choice (numpy/random/mtrand/mtrand.c:18069)\u001b[0;34m()\u001b[0m\n",
+      "\u001b[0;32mmtrand.pyx\u001b[0m in \u001b[0;36mmtrand.RandomState.randint (numpy/random/mtrand/mtrand.c:16422)\u001b[0;34m()\u001b[0m\n",
+      "\u001b[0;32mmtrand.pyx\u001b[0m in \u001b[0;36mmtrand.RandomState.randint (numpy/random/mtrand/mtrand.c:16227)\u001b[0;34m()\u001b[0m\n",
+      "\u001b[0;32mrandint_helpers.pxi\u001b[0m in \u001b[0;36mmtrand._rand_int64 (numpy/random/mtrand/mtrand.c:4193)\u001b[0;34m()\u001b[0m\n",
+      "\u001b[0;31mTypeError\u001b[0m: 'float' object cannot be interpreted as an integer"
+     ]
+    }
+   ],
+   "source": [
+    "throw_a_coin(4.5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "run_control": {}
+   },
+   "source": [
+    "or "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "throw_a_coin(-4)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "It looks like for both real numbers and negative numbers, we get two kinds of errors a `TypeError` and a `ValueError`.  We just engaged in one of the most rudimentary forms of testing, trial and error.  We can use pytest to automate this process by writing some functions that will automatically (and potentially repeatedly) test individual units of our code methodology.  These are called ***unit tests***.\n",
+    "\n",
+    "Before we write our tests, let's consider what we would think of as the approrpriate behavior for `throw_a_coin` under the conditions we considered above.  If `throw_a_coin` receives positive integer input, we want it to behave exactly as it currently does -- returning an output consisting of a list of characters 'H' or 'T' with the length of the list equal to the positive integer input. For a positive floating point input, we want `throw_a_coin_properly` to treat the input as if it were rounded down to the nearest integer thus returning a list of 'H' or 'T' integers whose length is the same as the input rounded down to the next highest integer.  For a any negative number input or an input of 0, we want `throw_a_coin_properly` to return an empty list."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "We create pytest tests by writing functions that start or end with \"test\".  We'll use the **convention** that our tests will start with \"test\".  \n",
+    "\n",
+    "We begin the code cell with ipytest's clean_tests function as a way to clear out the results of previous tests starting with \"test_throw_a_coin\" (the * is the standard wild card charater here).\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "## the * after test_throw_a_coin tells this code cell to clean out the results\n",
+    "## of all tests starting with test_throw_a_coin\n",
+    "ipytest.clean_tests(\"test_throw_a_coin*\")\n",
+    "\n",
+    "## run throw_a_coin with a variety of positive integer inputs (all numbers between 1 and 20) and\n",
+    "## verify that the length of the output list (e.g ['H', 'H', 'T', 'H', 'T']) matches the input integer\n",
+    "def test_throw_a_coin_length_positive():\n",
+    "    for n in range(1,20):\n",
+    "        assert len(throw_a_coin(n)) == n\n",
+    "\n",
+    "## verify that throw_a_coin produces an empty list (i.e. a list of length 0) if provide with an input\n",
+    "## of 0\n",
+    "def test_throw_a_coin_length_zero():\n",
+    "    ## should be the empty array\n",
+    "    assert len(throw_a_coin(0)) == 0\n",
+    "    \n",
+    "\n",
+    "## verify that given a positive floating point input (i.e. 4.34344298547201), throw_a_coin produces a list of\n",
+    "## coin flips of length equal to highest integer less than the input\n",
+    "def test_throw_a_coin_float():\n",
+    "    for n in np.random.exponential(7, size=5):\n",
+    "        assert len(throw_a_coin(n)) == np.floor(n)\n",
+    "        \n",
+    "\n",
+    "## verify that given any negative input (e.g. -323.4), throw_a_coin produces an empty\n",
+    "def test_throw_a_coin_negative():\n",
+    "    for n in range(-7, 0):\n",
+    "        assert len(throw_a_coin(n)) == 0\n",
+    "\n",
+    "        \n",
+    "ipytest.run_tests()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "As you see, we were able to use pytest (and ipytest which allows us to run pytest tests in our ipython notebooks) to automate the tests that we constructed manually before and get the same errors and successes.  Now time to fix our code and write our own test!"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "<div class='exercise'><b> Question 5: You Better Test Yourself before You Wreck Yourself! </b></div>\n",
+    "\n",
+    "Now it's time to fix `throw_a_coin` so that it passes the tests we've written above as well as add our own test to the mix!\n",
+    "\n",
+    "**5.1**. Write a new function called `throw_a_coin_properly` that will pass the tests that we saw above.  For your convenience we'll provide a new jupyter notebook cell with the tests rewritten for the new function.  All the tests should pass.  For a positive floating point input, we want `throw_a_coin_properly` to treat the input as if it were rounded down to the nearest integer.  For a any negative number input, we want `throw_a_coin_properly` to treat the input as if it were 0.\n",
+    "\n",
+    "**5.2**. Write a new test for `throw_a_coin_properly` that verifies that all the elements of the resultant arrays are 'H' or 'T'."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "#### Answers"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**5.1**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "button": false,
+    "collapsed": true,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "def throw_a_coin_properly(n_trials):\n",
+    "    if n_trials > 0:\n",
+    "        n = int(np.floor(n_trials))\n",
+    "        return(throw_a_coin(n))\n",
+    "    else:\n",
+    "        return([])\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "ipytest.clean_tests(\"test_throw_a_coin*\")\n",
+    "\n",
+    "def test_throw_a_coin_properly_length_positive():\n",
+    "    for n in range(1,20):\n",
+    "        assert len(throw_a_coin_properly(n)) == n\n",
+    "        \n",
+    "\n",
+    "def test_throw_a_coin_properly_length_zero():\n",
+    "    ## should be the empty array\n",
+    "    assert len(throw_a_coin_properly(0)) == 0\n",
+    "    \n",
+    "\n",
+    "def test_throw_a_coin_properly_float():\n",
+    "    \n",
+    "    for n in np.random.exponential(7, size=5):\n",
+    "        assert len(throw_a_coin_properly(n)) == np.floor(n)\n",
+    "        \n",
+    "\n",
+    "def test_throw_a_coin_properly_negative():\n",
+    "    \n",
+    "    for n in range(-7, 0):\n",
+    "        assert len(throw_a_coin_properly(n)) == 0\n",
+    "\n",
+    "        \n",
+    "ipytest.run_tests()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "source": [
+    "**5.2** "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "button": false,
+    "new_sheet": false,
+    "run_control": {
+     "read_only": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "ipytest.clean_tests(\"test_throw_a_coin*\")\n",
+    "\n",
+    "## write a test that verifies you don't have any other elements except H's and T's\n",
+    "def test_throw_a_coin_properly_verify_H_T():\n",
+    "    \n",
+    "    for j in range(1,10):\n",
+    "        arr = throw_a_coin_properly(j)\n",
+    "        for i in range(j):\n",
+    "            if arr[i] != \"H\" and arr[i] != \"T\":\n",
+    "                raise AssertionError\n",
+    "    \n",
+    "        \n",
+    "        \n",
+    "ipytest.run_tests()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "from IPython.core.display import HTML\n",
+    "def css_styling():\n",
+    "    styles = open(\"../../styles/cs109.css\", \"r\").read()\n",
+    "    return HTML(styles)\n",
+    "css_styling()"
+   ]
+  }
+ ],
+ "metadata": {
+  "anaconda-cloud": {},
+  "css": "cs109.css",
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.1"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
